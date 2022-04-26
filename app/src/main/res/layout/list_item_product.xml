@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:layout_marginTop="0dp"
+    app:cardBackgroundColor="@color/background_secondary"
+    app:cardCornerRadius="10dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/productDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="product's date"
+            android:textSize="12dp"
+            android:layout_marginBottom="5dp"/>
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/productThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:shapeAppearance="@style/roundedImageView"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:alpha="0.9"
+            android:src="@drawable/not_found_image" />
+        <TextView
+            android:id="@+id/productTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="product's title"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/black"
+            android:textSize="16dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/productLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="product's location"
+                app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/productPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="product's price"
+                android:textAlignment="textEnd"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
