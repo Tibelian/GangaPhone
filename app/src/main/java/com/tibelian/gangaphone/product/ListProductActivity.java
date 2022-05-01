@@ -1,25 +1,28 @@
 package com.tibelian.gangaphone.product;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.database.CurrentFilter;
+import com.tibelian.gangaphone.database.DatabaseManager;
 
 public class ListProductActivity extends AppCompatActivity {
 
-    private static final String DIALOG_FILTER = "dialog_filter";
+    public static final String DIALOG_FILTER = "dialog_filter";
+    public static final String DIALOG_FILTER_APPLIED = "dialog_filter_applied";
 
     private Button mShowFilterDialogBtn;
     private Fragment mProductsFragment;
+    //private TextView mCurrentSearchText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,10 +30,20 @@ public class ListProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_products);
 
+        //mCurrentSearchText = findViewById(R.id.currentSearchText);
+
         mShowFilterDialogBtn = findViewById(R.id.btnShowFilterDialog);
         mShowFilterDialogBtn.setOnClickListener(v -> {
             FilterFragment filterFragment = new FilterFragment();
             filterFragment.show(getSupportFragmentManager(), DIALOG_FILTER);
+        });
+
+        getSupportFragmentManager().setFragmentResultListener(DIALOG_FILTER, this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                if (result.getBoolean(DIALOG_FILTER_APPLIED))
+                    searchProducts();
+            }
         });
 
         initProductsFragment();
@@ -45,6 +58,11 @@ public class ListProductActivity extends AppCompatActivity {
                     .add(R.id.fragment_list, mProductsFragment)
                     .commit();
         }
+    }
+
+    private void searchProducts() {
+        //mCurrentSearchText.setText(CurrentFilter.getSearch());
+        ((ProductsFragment) mProductsFragment).reloadProducts();
     }
 
 }

@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:textSize="13dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Keyword:" />
@@ -15,6 +16,7 @@
         android:padding="4dp"
         android:background="#eee">
         <EditText
+            android:textSize="13dp"
             android:inputType="text"
             android:id="@+id/filterKeyword"
             android:layout_width="match_parent"
@@ -23,6 +25,7 @@
     </LinearLayout>
 
     <TextView
+        android:textSize="13dp"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,6 +36,7 @@
         android:orientation="horizontal"
         android:gravity="center">
         <CheckBox
+            android:textSize="13dp"
             android:id="@+id/filterStatusNew"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -41,6 +45,7 @@
             android:layout_marginRight="4dp"
             android:text="New" />
         <CheckBox
+            android:textSize="13dp"
             android:id="@+id/filterStatusScratched"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -49,6 +54,7 @@
             android:layout_marginRight="4dp"
             android:text="Scratched" />
         <CheckBox
+            android:textSize="13dp"
             android:id="@+id/filterStatusBroken"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -58,6 +64,7 @@
     </LinearLayout>
 
     <TextView
+        android:textSize="13dp"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,6 +75,7 @@
         android:padding="4dp"
         android:background="#eee">
         <EditText
+            android:textSize="13dp"
             android:inputType="textPostalAddress"
             android:id="@+id/filterLocation"
             android:layout_width="match_parent"
@@ -76,6 +84,7 @@
     </LinearLayout>
 
     <TextView
+        android:textSize="13dp"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -86,6 +95,7 @@
         android:padding="4dp"
         android:background="#eee">
         <EditText
+            android:textSize="13dp"
             android:inputType="numberDecimal"
             android:id="@+id/filterPriceMin"
             android:layout_width="0dp"
@@ -94,6 +104,7 @@
             android:layout_marginRight="4dp"
             android:hint="min"/>
         <EditText
+            android:textSize="13dp"
             android:inputType="numberDecimal"
             android:id="@+id/filterPriceMax"
             android:layout_width="0dp"
@@ -103,6 +114,7 @@
     </LinearLayout>
 
     <TextView
+        android:textSize="13dp"
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -116,26 +128,31 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <RadioButton
+                android:textSize="13dp"
                 android:id="@+id/filterOrderPriceAsc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Lowest price"/>
             <RadioButton
+                android:textSize="13dp"
                 android:id="@+id/filterOrderPriceDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Highest price"/>
             <RadioButton
+                android:textSize="13dp"
                 android:id="@+id/filterOrderDateDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Newest posts"/>
             <RadioButton
+                android:textSize="13dp"
                 android:id="@+id/filterOrderDateAsc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Oldest posts"/>
             <RadioButton
+                android:textSize="13dp"
                 android:id="@+id/filterOrderFeatured"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

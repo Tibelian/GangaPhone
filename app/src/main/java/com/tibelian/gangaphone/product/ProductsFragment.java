@@ -46,12 +46,11 @@ public class ProductsFragment extends Fragment {
 
         // init recycler
         mPostsRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), PRODUCTS_PER_ROW));
-        List<Product> posts = DatabaseManager.get(getActivity()).getProducts(true);
-        mPostAdapter = new PostListAdapter(posts);
+        mPostAdapter = new PostListAdapter();
         mPostsRecyclerView.setAdapter(mPostAdapter);
 
-        // num results
-        mNumPostsFound.setText(posts.size() + " results found:");
+        // load products form db
+        reloadProducts();
 
         return view;
     }
@@ -62,6 +61,13 @@ public class ProductsFragment extends Fragment {
         mPostsRecyclerView = view.findViewById(R.id.posts_recycler);
     }
 
+    public void reloadProducts() {
+        // obtain products
+        List<Product> posts = DatabaseManager.get(getActivity()).getProducts(true);
+        mPostAdapter.setPosts(posts);
+        // show results num
+        mNumPostsFound.setText(posts.size() + " results found");
+    }
 
 
 
@@ -70,10 +76,6 @@ public class ProductsFragment extends Fragment {
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
 
         private List<Product> mPosts;
-
-        public PostListAdapter(List<Product> posts) {
-            mPosts = posts;
-        }
         public void setPosts(List<Product> posts) {
             mPosts = posts;
         }
@@ -110,17 +112,12 @@ public class ProductsFragment extends Fragment {
             public ViewHolder(View v) {
                 super(v);
 
-                // on click item show toast
+                // on click item show product details
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getActivity(),
-                                "show product", Toast.LENGTH_SHORT).show();
-                        /*
                         startActivity(
-                                CrimePagerActivity.newIntent(getActivity(), crime.getId())
-                        );
-                        */
+                            ProductPagerActivity.newIntent(getActivity(), product.getId()));
                     }
                 });
 

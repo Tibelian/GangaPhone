@@ -15,14 +15,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Apply new filter"/>
+    <!--
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Current search: "/>
         <TextView
+            android:id="@+id/currentSearchText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="example filter..."/>
+    -->
     </LinearLayout>
 
     <FrameLayout

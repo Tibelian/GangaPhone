@@ -22,6 +22,9 @@
         <activity
             android:name=".product.ListProductActivity"
             android:exported="true" />
+        <activity
+            android:name=".product.ProductPagerActivity"
+            android:parentActivityName=".product.ListProductActivity" />
     </application>
 
 </manifest>

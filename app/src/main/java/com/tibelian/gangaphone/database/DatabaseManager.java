@@ -37,7 +37,7 @@ public class DatabaseManager {
         return sDatabaseManager;
     }
 
-    public static List<Product> getProducts(boolean useMainFilter) {
+    public List<Product> getProducts(boolean useMainFilter) {
 
         ArrayList<Product> list = new ArrayList<>();
 
@@ -80,11 +80,28 @@ public class DatabaseManager {
             p3.setDate(formatter.parse("26-04-2022 18:06:02"));
         } catch(ParseException pe) {}
 
+        p1.setId(1);
+        p2.setId(2);
+        p3.setId(3);
+
         list.add(p1);
         list.add(p2);
         list.add(p3);
 
         return list;
+    }
+
+    public Product getProduct(int productId) {
+
+        // @todo select form database
+
+        // test
+        List<Product> products = getProducts(true);
+        for(Product p:products) {
+            if (p.getId() == productId) return p;
+        }
+
+        return null;
     }
 
 }

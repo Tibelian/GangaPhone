@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class Product implements Cloneable {
 
+    private int id;
     private String name;
     private String description;
     private Date date;
@@ -21,6 +22,13 @@ public class Product implements Cloneable {
         } catch(CloneNotSupportedException ce){
             return null;
         }
+    }
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
