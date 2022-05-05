@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.tibelian.gangaphone.database.model.Chat;
+import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.database.model.ProductPicture;
 import com.tibelian.gangaphone.database.model.User;
@@ -91,6 +93,34 @@ public class DatabaseManager {
         return list;
     }
 
+    public List<Chat> getChats() {
+
+        ArrayList<Chat> chats = new ArrayList<>();
+
+        Chat c1 = new Chat();
+        c1.setRecipient("pepe");
+        c1.setLastDate(new Date());
+        c1.setLastMessage("Hola quiero comprar tu iphone");
+        c1.setOnline(true);
+
+        Chat c2 = new Chat();
+        c2.setRecipient("juan");
+        c2.setLastDate(new Date());
+        c2.setLastMessage("Ok");
+
+        chats.add(c1);
+        chats.add(c2);
+
+        return chats;
+    }
+
+    public List<Message> getConversation(User u1, User u2) {
+
+        // @todo select form database
+
+        return new ArrayList<>();
+    }
+
     public Product getProduct(int productId) {
 
         // @todo select form database
@@ -100,6 +130,13 @@ public class DatabaseManager {
         for(Product p:products) {
             if (p.getId() == productId) return p;
         }
+
+        return null;
+    }
+
+    public User getUser(int userId) {
+
+        // @todo select form database
 
         return null;
     }
