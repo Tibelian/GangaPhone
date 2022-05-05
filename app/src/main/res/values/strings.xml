@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">GangaPhone</string>
+    <string name="menu_msg">Messenger</string>
+    <string name="menu_user">User</string>
+    <string name="menu_back">Go Back</string>
+    <string name="menu_logout">Log out</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
 </resources>

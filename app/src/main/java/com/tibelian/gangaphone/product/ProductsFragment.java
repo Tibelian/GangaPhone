@@ -1,10 +1,14 @@
 package com.tibelian.gangaphone.product;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +25,7 @@ import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.async.ImageLoadTask;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
+import com.tibelian.gangaphone.messenger.MessageListActivity;
 
 import java.util.List;
 
@@ -32,6 +37,14 @@ public class ProductsFragment extends Fragment {
     private TextView mNumPostsFound;
     private RecyclerView mPostsRecyclerView;
     private PostListAdapter mPostAdapter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // añade menú
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -55,7 +68,6 @@ public class ProductsFragment extends Fragment {
         return view;
     }
 
-
     private void initMemberVariables(View view) {
         mNumPostsFound = view.findViewById(R.id.num_posts_found);
         mPostsRecyclerView = view.findViewById(R.id.posts_recycler);
@@ -68,10 +80,6 @@ public class ProductsFragment extends Fragment {
         // show results num
         mNumPostsFound.setText(posts.size() + " results found");
     }
-
-
-
-
 
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
 
@@ -156,6 +164,24 @@ public class ProductsFragment extends Fragment {
 
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.options_main, menu);
+    }
 
-
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_msg:
+                //
+                startActivity(new Intent(getContext(), MessageListActivity.class));
+                return true;
+            case R.id.menu_user:
+                // @todo user's product list
+                //startActivity(new Intent(getContext(), UserProductListActivity.class));
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
