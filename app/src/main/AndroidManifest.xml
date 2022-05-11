@@ -27,10 +27,16 @@
             android:parentActivityName=".product.ListProductActivity" />
         <activity
             android:name=".messenger.ChatListActivity"
-            android:exported="true" />
+            android:parentActivityName=".product.ListProductActivity" />
         <activity
             android:name=".messenger.ChatActivity"
             android:parentActivityName=".messenger.ChatListActivity" />
+        <activity
+            android:name=".user.profile.ProductListActivity"
+            android:parentActivityName=".product.ListProductActivity" />
+        <activity
+            android:name=".user.profile.ProductEditActivity"
+            android:parentActivityName=".user.profile.ProductListActivity" />
     </application>
 
 </manifest>

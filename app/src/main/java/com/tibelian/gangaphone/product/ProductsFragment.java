@@ -24,6 +24,7 @@ import com.tibelian.gangaphone.async.ImageLoadTask;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.messenger.ChatListActivity;
+import com.tibelian.gangaphone.user.profile.ProductListActivity;
 
 import java.util.List;
 
@@ -176,8 +177,7 @@ public class ProductsFragment extends Fragment {
                 startActivity(new Intent(getContext(), ChatListActivity.class));
                 return true;
             case R.id.menu_user:
-                // @todo user's product list
-                //startActivity(new Intent(getContext(), UserProductListActivity.class));
+                startActivity(new Intent(getContext(), ProductListActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

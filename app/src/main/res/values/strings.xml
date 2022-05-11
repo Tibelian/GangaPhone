@@ -8,4 +8,7 @@
     <string name="offline">Offline</string>
     <string name="write_your_message_here">Write your message here</string>
     <string name="send">Send</string>
+    <string name="my_products">My products:</string>
+    <string name="add_btn">Add</string>
+    <string name="num_views">Views</string>
 </resources>

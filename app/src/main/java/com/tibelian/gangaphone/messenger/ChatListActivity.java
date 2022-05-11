@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Chat;
+import com.tibelian.gangaphone.user.profile.ProductListActivity;
 
 import java.util.List;
 
@@ -135,8 +136,7 @@ public class ChatListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_user:
-                // @todo user's product list
-                //startActivity(new Intent(getContext(), UserProductListActivity.class));
+                startActivity(new Intent(ChatListActivity.this, ProductListActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);
