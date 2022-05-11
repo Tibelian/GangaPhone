@@ -1,7 +1,6 @@
 package com.tibelian.gangaphone.product;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,7 +23,7 @@ import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.async.ImageLoadTask;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
-import com.tibelian.gangaphone.messenger.MessageListActivity;
+import com.tibelian.gangaphone.messenger.ChatListActivity;
 
 import java.util.List;
 
@@ -175,7 +173,7 @@ public class ProductsFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_msg:
                 //
-                startActivity(new Intent(getContext(), MessageListActivity.class));
+                startActivity(new Intent(getContext(), ChatListActivity.class));
                 return true;
             case R.id.menu_user:
                 // @todo user's product list

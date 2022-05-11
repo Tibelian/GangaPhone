@@ -97,14 +97,20 @@ public class DatabaseManager {
 
         ArrayList<Chat> chats = new ArrayList<>();
 
+        User pepe = new User();
+        pepe.setUsername("pepe");
+        pepe.setOnline(true);
+
+        User juan = new User();
+        juan.setUsername("juan");
+
         Chat c1 = new Chat();
-        c1.setRecipient("pepe");
+        c1.setUser(pepe);
         c1.setLastDate(new Date());
         c1.setLastMessage("Hola quiero comprar tu iphone");
-        c1.setOnline(true);
 
         Chat c2 = new Chat();
-        c2.setRecipient("juan");
+        c2.setUser(juan);
         c2.setLastDate(new Date());
         c2.setLastMessage("Ok");
 
@@ -112,13 +118,6 @@ public class DatabaseManager {
         chats.add(c2);
 
         return chats;
-    }
-
-    public List<Message> getConversation(User u1, User u2) {
-
-        // @todo select form database
-
-        return new ArrayList<>();
     }
 
     public Product getProduct(int productId) {
@@ -134,11 +133,58 @@ public class DatabaseManager {
         return null;
     }
 
-    public User getUser(int userId) {
+    public User getUser(String username) {
 
         // @todo select form database
 
-        return null;
+        User yo = new User();
+        yo.setUsername("tiberiu");
+
+        return yo;
+    }
+
+    public List<Message> getMessages(User receiver) {
+
+        ArrayList<Message> messages = new ArrayList<>();
+
+        User paco = new User();
+        paco.setUsername("paco");
+
+        User yo = new User();
+        yo.setUsername("tiberiu");
+
+        Message m1 = new Message();
+        m1.setFrom(paco);
+        m1.setDate(new Date());
+        m1.setContent("Hola quiero comprar tu iphone");
+
+        Message m2 = new Message();
+        m2.setFrom(yo);
+        m2.setDate(new Date());
+        m2.setContent("Hola");
+        m2.setRead(true);
+
+        Message m3 = new Message();
+        m3.setFrom(paco);
+        m3.setDate(new Date());
+        m3.setContent("aún lo tienes?");
+
+        Message m4 = new Message();
+        m4.setFrom(yo);
+        m4.setDate(new Date());
+        m4.setContent("sí, nuevo sin abrir 900€");
+
+        messages.add(m1);
+        messages.add(m2);
+        messages.add(m3);
+        messages.add(m4);
+
+        return messages;
+    }
+
+    public boolean sendMessage(Message msg) {
+
+        return false;
     }
 
 }

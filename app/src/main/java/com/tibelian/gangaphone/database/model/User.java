@@ -11,6 +11,7 @@ public class User {
     private String location;
     private ArrayList<Product> products;
     private ArrayList<Message> messages;
+    private boolean isOnline;
 
     public String getUsername() {
         return username;
@@ -66,5 +67,13 @@ public class User {
 
     public void setMessages(ArrayList<Message> messages) {
         this.messages = messages;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
     }
 }

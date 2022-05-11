@@ -4,18 +4,17 @@ import java.util.Date;
 
 public class Chat {
 
-    private String recipient;
+    private User user;
     private String lastMessage;
     private Date lastDate;
     private boolean isRead;
-    private boolean isOnline;
 
-    public String getRecipient() {
-        return recipient;
+    public User getUser() {
+        return user;
     }
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getLastMessage() {
@@ -40,14 +39,6 @@ public class Chat {
 
     public void setRead(boolean read) {
         isRead = read;
-    }
-
-    public boolean isOnline() {
-        return isOnline;
-    }
-
-    public void setOnline(boolean online) {
-        isOnline = online;
     }
 
 }

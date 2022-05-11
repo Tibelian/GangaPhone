@@ -26,8 +26,11 @@
             android:name=".product.ProductPagerActivity"
             android:parentActivityName=".product.ListProductActivity" />
         <activity
-            android:name=".messenger.MessageListActivity"
+            android:name=".messenger.ChatListActivity"
             android:exported="true" />
+        <activity
+            android:name=".messenger.ChatActivity"
+            android:parentActivityName=".messenger.ChatListActivity" />
     </application>
 
 </manifest>

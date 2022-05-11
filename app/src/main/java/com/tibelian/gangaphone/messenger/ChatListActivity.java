@@ -23,7 +23,7 @@ import com.tibelian.gangaphone.database.model.Chat;
 
 import java.util.List;
 
-public class MessageListActivity extends AppCompatActivity {
+public class ChatListActivity extends AppCompatActivity {
 
     private RecyclerView mPostsRecyclerView;
     private PostListAdapter mPostAdapter;
@@ -42,11 +42,11 @@ public class MessageListActivity extends AppCompatActivity {
         mPostsRecyclerView.setAdapter(mPostAdapter);
 
         // load messages form db
-        reloadMessages();
+        loadChats();
     }
 
 
-    public void reloadMessages() {
+    public void loadChats() {
         // obtain msg
         List<Chat> posts = DatabaseManager.get(this).getChats();
         mPostAdapter.setPosts(posts);
@@ -94,10 +94,8 @@ public class MessageListActivity extends AppCompatActivity {
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        /*
-                        startActivity(
-                            ProductPagerActivity.newIntent(getActivity(), product.getId()));
-                         */
+                        startActivity(ChatActivity.newIntent(
+                                ChatListActivity.this, chat.getUser().getUsername()));
                     }
                 });
 
@@ -116,10 +114,10 @@ public class MessageListActivity extends AppCompatActivity {
 
                 // bind data
                 mDate.setText(timeAgo);
-                mRecipient.setText(chat.getRecipient());
+                mRecipient.setText(chat.getUser().getUsername());
                 mLastMsg.setText(chat.getLastMessage());
                 mLastMsg.setTextColor(chat.isRead() ? Color.GRAY : Color.BLACK);
-                mOnline.setText(chat.isOnline() ? R.string.online : R.string.offline);
+                mOnline.setText(chat.getUser().isOnline() ? R.string.online : R.string.offline);
                 mOnline.setAllCaps(false);
             }
 

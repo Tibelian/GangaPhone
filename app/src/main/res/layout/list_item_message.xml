@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/msgDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="date"
+        android:textSize="11dp"/>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/msgContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardBackgroundColor="#555">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+            <TextView
+                android:id="@+id/msgContent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="current message"/>
+            <CheckBox
+                android:id="@+id/msgIsRead"
+                android:layout_width="25dp"
+                android:layout_height="20dp"
+                android:enabled="false"
+                android:checked="true"
+                android:scaleX=".6"
+                android:scaleY=".6"
+                android:visibility="invisible"
+                android:padding="0dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>
