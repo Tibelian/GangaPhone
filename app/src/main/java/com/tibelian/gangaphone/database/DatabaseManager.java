@@ -187,4 +187,17 @@ public class DatabaseManager {
         return false;
     }
 
+    public List<ProductPicture> getProductPictures() {
+
+        ArrayList<ProductPicture> imgs = new ArrayList<>();
+
+        ProductPicture p1 = new ProductPicture();
+        p1.setUrl("https://www.journaldugeek.com/wp-content/blogs.dir/1/files/2017/02/blackberry-keyone-02.png");
+
+        imgs.add(p1);
+
+
+        return imgs;
+
+    }
 }

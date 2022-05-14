@@ -1,13 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- page's title -->
     <TextView
+        android:id="@+id/edit_pTitle"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="EDIT PRODUCT"/>
+        android:textSize="16dp"
+        android:textColor="@color/dark"
+        android:text="@string/edit_p_new"/>
+    <LinearLayout
+        android:id="@+id/edit_pLine"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="3dp"
+        android:background="@color/dark"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/edit_pTitle"
+        tools:layout_editor_absoluteX="10dp" />
 
-</LinearLayout>
+    <!-- name and price -->
+    <LinearLayout
+        android:id="@+id/edit_pNamePiceConainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/edit_pLine"
+        tools:layout_editor_absoluteX="10dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2.5"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_pName" />
+            <LinearLayout
+                android:background="@color/background_secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/edit_pName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_pPrice" />
+            <LinearLayout
+                android:background="@color/background_secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/edit_pPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- description -->
+    <LinearLayout
+        android:id="@+id/edit_pDescContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/edit_pNamePiceConainer"
+        tools:layout_editor_absoluteX="10dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_pDesc" />
+        <LinearLayout
+            android:background="@color/background_secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/edit_pDesc"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:textSize="13dp"
+                android:inputType="textMultiLine" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- status -->
+    <LinearLayout
+        android:id="@+id/edit_pStatusContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/edit_pDescContainer"
+        tools:layout_editor_absoluteX="10dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_pStatus" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/background_secondary"
+            android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/edit_pStatusNew"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="New"
+                android:textSize="13dp" />
+            <CheckBox
+                android:id="@+id/edit_pStatusScratched"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Scratched"
+                android:textSize="13dp" />
+            <CheckBox
+                android:id="@+id/edit_pStatusBroken"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Broken"
+                android:textSize="13dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- images -->
+    <LinearLayout
+        android:id="@+id/edit_pImagesContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/edit_pStatusContainer"
+        tools:layout_editor_absoluteX="10dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_pImages"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <Button
+                android:id="@+id/edit_pImageUpload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX=".7"
+                android:scaleY=".7"
+                android:text="@string/edit_pImageUpload"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <FrameLayout
+            android:id="@+id/edit_pImagesList"
+            android:background="@color/background_secondary"
+            android:layout_width="match_parent"
+            android:layout_height="140dp" />
+    </LinearLayout>
+
+
+    <!-- total views -->
+    <LinearLayout
+        android:id="@+id/edit_pViewsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/edit_pImagesContainer"
+        tools:layout_editor_absoluteX="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:text="@string/edit_pViews" />
+
+        <TextView
+            android:id="@+id/edit_pViews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/background_secondary"
+            android:padding="15dp"
+            android:text="0"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <!-- product is sold -->
+    <CheckBox
+        android:id="@+id/edit_pSold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/edit_pSold"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/edit_pViewsContainer"
+        tools:layout_editor_absoluteX="10dp" />
+
+    <!-- buttons -->
+    <LinearLayout
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/edit_pDelete"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:textSize="13dp"
+            android:backgroundTint="@color/background_secondary"
+            android:textColor="@color/dark"
+            android:text="@string/edit_pDelete"/>
+        <Button
+            android:id="@+id/edit_pSave"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_pSave"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

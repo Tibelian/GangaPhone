@@ -1,10 +1,24 @@
 package com.tibelian.gangaphone.database.model;
 
+import android.graphics.Bitmap;
+
+import com.tibelian.gangaphone.async.ImageLoadTask;
+
 public class ProductPicture {
 
+    private int id;
     private String url;
     private String description;
     private Product product;
+    private Bitmap bitmap;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getUrl() {
         return url;
@@ -29,4 +43,5 @@ public class ProductPicture {
     public void setProduct(Product product) {
         this.product = product;
     }
+
 }

@@ -1,12 +1,16 @@
 package com.tibelian.gangaphone.user.profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
+import com.tibelian.gangaphone.messenger.ChatListActivity;
 
 import java.util.List;
 
@@ -25,6 +30,7 @@ public class ProductListActivity extends AppCompatActivity {
 
     private RecyclerView mPostsRecyclerView;
     private PostListAdapter mPostAdapter;
+    private Button mAddProductBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +49,16 @@ public class ProductListActivity extends AppCompatActivity {
         List<Product> posts = DatabaseManager.get(this).getProducts(true);
         mPostAdapter.setPosts(posts);
         mPostAdapter.setContext(this);
+
+        //
+        mAddProductBtn = findViewById(R.id.profile_addProduct);
+        mAddProductBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(
+                        ProductEditActivity.newIntent(ProductListActivity.this, 0));
+            }
+        });
 
     }
 
@@ -115,6 +131,25 @@ public class ProductListActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_main, menu);
+        menu.findItem(R.id.menu_user).setTitle(R.string.menu_logout);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_msg:
+                startActivity(new Intent(ProductListActivity.this, ChatListActivity.class));
+                return true;
+            case R.id.menu_user:
+                // @todo logout
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

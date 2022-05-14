@@ -11,4 +11,17 @@
     <string name="my_products">My products:</string>
     <string name="add_btn">Add</string>
     <string name="num_views">Views</string>
+    <string name="edit_pName">Name:</string>
+    <string name="edit_p_new">New Product</string>
+    <string name="edit_pPrice">Price:</string>
+    <string name="edit_pDesc">Description:</string>
+    <string name="edit_pStatus">Status:</string>
+    <string name="edit_pSold">Mark as sold</string>
+    <string name="edit_pViews">Views on this product: </string>
+    <string name="edit_pImages">Images:</string>
+    <string name="edit_pImageUpload">Upload</string>
+    <string name="edit_pDelete">Remove</string>
+    <string name="edit_pSave">Save</string>
+    <string name="error_newProduct">ERROR NEW PRODUCT</string>
+    <string name="edit_pNoImages">There are no images uploaded</string>
 </resources>
