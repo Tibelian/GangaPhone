@@ -15,6 +15,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -27,10 +31,33 @@ public class DatabaseManager {
 
     private static DatabaseManager sDatabaseManager;
     private Context mContext;
+    private Connection conn;
+
+    /**
+     * Create connection. Obtain credentials using the static Database object
+     */
+    private void connect() {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection(
+                    Configuration.URL, Configuration.DB_USER, Configuration.DB_PASS);
+        }
+        catch(Exception e) {
+            Log.e("DatabaseManager", "connection error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Close connection
+     */
+    private void closeConnection() {
+        try { conn.close(); }
+        catch(Exception e) {}
+    }
 
     private DatabaseManager(Context context) {
         mContext = context.getApplicationContext();
-        // @todo open conn
+        connect();
     }
 
     public static DatabaseManager get(Context context) {
@@ -41,56 +68,95 @@ public class DatabaseManager {
 
     public List<Product> getProducts(boolean useMainFilter) {
 
+        // list of products
         ArrayList<Product> list = new ArrayList<>();
 
-        User tiberiu = new User();
-        tiberiu.setUsername("tiberiu");
-        tiberiu.setLocation("albacete");
+        // prepare query str
+        String query = "SELECT p.*, p.id as pid, u.id as uid, pp.url AS thumbnail " +
+                "FROM product p LEFT JOIN user u ON p.user_id = u.id " +
+                "LEFT JOIN product_picture pp ON p.id = pp.product_id " +
+                "WHERE p.sold = 0" + (useMainFilter ? getFilterQuery() : "") +
+                " GROUP BY p.id;";
 
-        ProductPicture pp1 = new ProductPicture();
-        pp1.setUrl("https://www.muycomputer.com/wp-content/uploads/2019/10/dise%C3%B1o-del-Phone-12.jpg");
-
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-
-        Product p1 = new Product();
-        p1.setName("xiaomi pocophone f1");
         try {
-            p1.setDate(formatter.parse("25-04-2022 23:30:12"));
-        } catch(ParseException pe) {}
-        p1.setPrice(250.50f);
-        p1.setStatus("NEW");
-        p1.setOwner(tiberiu);
-        p1.setDescription("product's description here");
-        p1.setPictures(new ArrayList<ProductPicture>());
-        p1.getPictures().add(pp1);
-        Log.e("Pictures`",p1.getPictures().size() + "");
+            // create statement
+            Statement stm = conn.createStatement();
 
-        Product p2 = p1.clone();
-        p2.setPrice(200);
-        p2.setName("samsung a40");
-        try {
-            p2.setDate(formatter.parse("26-04-2022 17:30:12"));
-        } catch(ParseException pe) {}
-        p2.setPictures(new ArrayList<>());
-
-
-        Product p3 = p1.clone();
-        p3.setPrice(120);
-        p3.setName("iphone 13");
-        p2.setPictures(new ArrayList<>());
-        try {
-            p3.setDate(formatter.parse("26-04-2022 18:06:02"));
-        } catch(ParseException pe) {}
-
-        p1.setId(1);
-        p2.setId(2);
-        p3.setId(3);
-
-        list.add(p1);
-        list.add(p2);
-        list.add(p3);
+            // execute
+            if (stm.execute(query)) {
+                ResultSet result = stm.getResultSet();
+                while (result.next()) {
+                    User pu = new User();
+                    Product p = new Product();
+                    ProductPicture pp = new ProductPicture();
+                    ArrayList<ProductPicture> ppList = new ArrayList<>();
+                    ppList.add(pp);
+                    p.setId(result.getInt("id"));
+                    p.setName(result.getString("name"));
+                    p.setPrice(result.getFloat("price"));
+                    p.setStatus(result.getString("status"));
+                    p.setSold(result.getBoolean("sold"));
+                    p.setVisits(result.getInt("visits"));
+                    p.setOwner(pu);
+                    pu.setId(result.getInt("uid"));
+                    pu.setUsername(result.getString("username"));
+                    pu.setLocation(result.getString("location"));
+                    pp.setUrl(result.getString("thumbnail"));
+                    p.setPictures(ppList);
+                    list.add(p);
+                }
+            }
+            stm.close();
+        } catch(Exception e) {
+            Log.e("DatabaseManager", "exception: " + e.getMessage());
+        }
 
         return list;
+    }
+
+    private String getFilterQuery() {
+        String query = "";
+
+        // status
+        if (CurrentFilter.status.size() > 0) {
+            query += " AND p.status IN (";
+            for (int i = 0; i < CurrentFilter.status.size(); i++) {
+                if (i != 0) query += ",";
+                query += CurrentFilter.status.get(i);
+            }
+            query += ")";
+        }
+
+        // keyword
+        if (CurrentFilter.keyword.length() > 2)
+            query += " AND (p.name LIKE = '%" + CurrentFilter.keyword + "%' OR " +
+                    "p.description LIKE = '%" + CurrentFilter.keyword + "%')";
+
+        // location
+        if (CurrentFilter.location.length() > 0)
+            query += " AND u.location = '"+ CurrentFilter.location +"'";
+
+        // price
+        if (CurrentFilter.maxPrice > -1)
+            query += " AND p.price < " + CurrentFilter.maxPrice;
+        if (CurrentFilter.minPrice > -1)
+            query += " AND p.price > " + CurrentFilter.minPrice;
+
+        // order
+        switch (CurrentFilter.orderBy) {
+            case "date.asc":
+                query += " ORDER BY p.date ASC"; break;
+            case "date.desc":
+                query += " ORDER BY p.date DESC"; break;
+            case "price.asc":
+                query += " ORDER BY p.price ASC"; break;
+            case "price.desc":
+                query += " ORDER BY p.price DESC"; break;
+            case "featured":
+                query += " ORDER BY p.visits DESC"; break;
+        }
+
+        return query;
     }
 
     public List<Chat> getChats() {

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -102,13 +103,13 @@ public class ImagesFragment extends Fragment {
 
             public ProductPicture picture;
             private ImageView mImage;
-            private Button mRemoveBtn;
+            private TextView mRemoveBtn;
 
             public ViewHolder(View v) {
                 super(v);
                 // bind xml textview
                 mImage = v.findViewById(R.id.imageBitmap);
-                //mRemoveBtn = v.findViewById(R.id.imageDeleteBtn);
+                mRemoveBtn = v.findViewById(R.id.imageDeleteBtn);
 
             }
 
@@ -117,15 +118,16 @@ public class ImagesFragment extends Fragment {
                 new ImageLoadTask(picture.getUrl(), mImage)
                         .execute();
 
-                /*
+
                 mRemoveBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Toast.makeText(getActivity(), "remove img", Toast.LENGTH_SHORT).show();
                         // @todo delete image from database
                     }
                 });
 
-                 */
+
             }
 
         }

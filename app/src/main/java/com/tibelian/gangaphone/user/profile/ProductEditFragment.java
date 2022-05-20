@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -142,16 +144,25 @@ public class ProductEditFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
         try{
-            Uri imageSelected = data.getParcelableExtra(Intent.EXTRA_STREAM);
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageSelected);
 
-            Toast.makeText(getActivity(), "IMAGE: " + bitmap.toString(), Toast.LENGTH_SHORT).show();
-            //
-            //imageView.setImageBitmap(bitmap);
+            if (requestCode == REQUEST_PHOTO) {
+
+                Uri imageSelected = data.getParcelableExtra(Intent.EXTRA_STREAM);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), imageSelected);
+
+                Toast.makeText(getActivity(), "IMAGE: " + bitmap.toString(), Toast.LENGTH_SHORT).show();
+                //
+                //imageView.setImageBitmap(bitmap);
+
+            }
 
         }
-        catch (IOException e) {}
-        catch (NullPointerException e) {}
+        catch (IOException e) {
+            Log.e("onActivityResult", "IOException --> request photo");
+        }
+        catch (NullPointerException e) {
+            Log.e("onActivityResult", "NullPointerException --> request photo");
+        }
 
     }
 }
