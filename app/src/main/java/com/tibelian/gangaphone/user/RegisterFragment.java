@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,9 @@ import androidx.fragment.app.Fragment;
 
 import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.database.DatabaseManager;
+import com.tibelian.gangaphone.database.model.User;
 import com.tibelian.gangaphone.product.ListProductActivity;
 
 public class RegisterFragment extends Fragment {
@@ -47,7 +51,33 @@ public class RegisterFragment extends Fragment {
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Login", "create account");
+
+                if (!mPasswordInput.getText().toString().equals(mPassword2Input.getText().toString())) {
+                    Toast.makeText(getActivity(),
+                            "The passwords don't match", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                User registered = new User();
+                registered.setUsername(mUsernameInput.getText().toString());
+                registered.setPassword(mPasswordInput.getText().toString());
+                registered.setEmail(mEmailInput.getText().toString());
+                registered.setPhone(mPhoneInput.getText().toString());
+
+                // @todo obtain lcoation using gps
+                // if no permission the use ip location
+                registered.setLocation("unknown");
+
+                int id = new DatabaseManager().createUser(registered);
+                if (id != -1) {
+                    registered.setId(id);
+                    Session.get().setUser(registered);
+                    Session.get().setLoggedIn(true);
+                    startActivity(new Intent(getContext(), ListProductActivity.class));
+                    Log.d("Register", "user created successfully");
+                } else {
+                    Toast.makeText(getActivity(),
+                            "Couldn't create the account", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         mLoginBtn.setOnClickListener(new View.OnClickListener() {

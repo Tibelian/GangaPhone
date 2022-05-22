@@ -37,7 +37,7 @@ public class ProductPagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product_pager);
 
         //
-        mProducts = DatabaseManager.get(this).getProducts(true);
+        mProducts = new DatabaseManager().getProducts(true);
 
         //
         initViewPager();

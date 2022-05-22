@@ -13,7 +13,7 @@ public class Product implements Cloneable {
     private float price;
     private boolean sold;
     private int visits;
-    private ArrayList<ProductPicture> pictures;
+    private ArrayList<ProductPicture> pictures = new ArrayList<>();
     private User owner;
 
     public Product clone() {

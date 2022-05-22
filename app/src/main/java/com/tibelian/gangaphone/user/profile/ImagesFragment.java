@@ -2,6 +2,7 @@ package com.tibelian.gangaphone.user.profile;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,8 @@ import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.database.model.ProductPicture;
 import com.tibelian.gangaphone.messenger.ChatListActivity;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImagesFragment extends Fragment {
@@ -42,7 +45,6 @@ public class ImagesFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_product_images, container, false);
 
-
         // bind xml elements
         mImagesRcyclerView = view.findViewById(R.id.images_recycler);
         mNoImagesFound = view.findViewById(R.id.edit_pNoImages);
@@ -52,17 +54,14 @@ public class ImagesFragment extends Fragment {
         mImagesAdapter = new ImagesListAdapter();
         mImagesRcyclerView.setAdapter(mImagesAdapter);
 
-        // update list
-        loadImages();
-
         return view;
     }
 
-    public void loadImages() {
+    public void loadImages(ArrayList<ProductPicture> list) {
         // obtain pictures form database
-        mImagesAdapter.setImages(
-                DatabaseManager.get(getActivity()).getProductPictures());
+        mImagesAdapter.setImages(list);
         mNoImagesFound.setVisibility(mImagesAdapter.getItemCount() > 0 ? View.GONE : View.VISIBLE);
+        mImagesAdapter.notifyDataSetChanged();
     }
 
 
@@ -75,6 +74,7 @@ public class ImagesFragment extends Fragment {
         public void setImages(List<ProductPicture> images) {
             mImages = images;
         }
+        public List<ProductPicture> getImages() { return mImages; }
         public void setContext(Context context) {
             this.context = context;
         }
@@ -110,20 +110,22 @@ public class ImagesFragment extends Fragment {
                 // bind xml textview
                 mImage = v.findViewById(R.id.imageBitmap);
                 mRemoveBtn = v.findViewById(R.id.imageDeleteBtn);
-
             }
 
             public void bind()
             {
-                new ImageLoadTask(picture.getUrl(), mImage)
-                        .execute();
-
+                if (picture.getUri() != null)
+                    mImage.setImageURI(picture.getUri());
+                else
+                    new ImageLoadTask(picture.getUrl(), mImage)
+                            .execute();
 
                 mRemoveBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getActivity(), "remove img", Toast.LENGTH_SHORT).show();
-                        // @todo delete image from database
+                        mImages.remove(picture);
+                        mNoImagesFound.setVisibility(mImagesAdapter.getItemCount() > 0 ? View.GONE : View.VISIBLE);
+                        mImagesAdapter.notifyDataSetChanged();
                     }
                 });
 

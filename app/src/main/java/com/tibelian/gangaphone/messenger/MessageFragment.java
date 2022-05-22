@@ -57,7 +57,7 @@ public class MessageFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         String username = getArguments().getString(ARG_USERNAME, "");
-        mUser = DatabaseManager.get(getActivity()).getUser(username);
+        mUser = new DatabaseManager().getUserByUsername(username);
 
     }
 
@@ -98,7 +98,7 @@ public class MessageFragment extends Fragment {
 
     public void loadMessages() {
         // obtain msg
-        List<Message> posts = DatabaseManager.get(getContext()).getMessages(mUser);
+        List<Message> posts = new DatabaseManager().getMessages(mUser);
         mMessagesAdapter.setMessages(posts);
     }
 
@@ -117,7 +117,7 @@ public class MessageFragment extends Fragment {
         //newMsg.setFrom(); @todo current user session
         newMsg.setTo(mUser);
 
-        boolean ok = DatabaseManager.get(getContext()).sendMessage(newMsg);
+        boolean ok = new DatabaseManager().sendMessage(newMsg);
         if (ok) {
             // clear input text
             mInputEditText.setText("");

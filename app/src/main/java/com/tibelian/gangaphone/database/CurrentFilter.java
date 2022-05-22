@@ -1,5 +1,15 @@
 package com.tibelian.gangaphone.database;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class CurrentFilter {
@@ -18,6 +28,21 @@ public class CurrentFilter {
         CurrentFilter.minPrice = -1;
         CurrentFilter.maxPrice = -1;
         CurrentFilter.orderBy = "";
+    }
+
+    public static String toJson() {
+        JSONObject filter = new JSONObject();
+        try {
+            if (keyword.length() > 0) filter.put("keyword", keyword);
+            if (status.size() > 0) filter.put("status", new JSONArray(status));
+            if (location.length() > 0) filter.put("location", location);
+            if (minPrice != -1) filter.put("minPrice", minPrice);
+            if (maxPrice != -1) filter.put("maxPrice", maxPrice);
+            if (orderBy.length() > 0) filter.put("orderBy", orderBy);
+        }
+        catch (Exception e) {}
+        Log.e("CurrentFilter@toJson", filter.toString());
+        return filter.toString();
     }
 
     public static String getSearch() {

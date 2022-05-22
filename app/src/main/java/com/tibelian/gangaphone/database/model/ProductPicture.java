@@ -1,6 +1,7 @@
 package com.tibelian.gangaphone.database.model;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 import com.tibelian.gangaphone.async.ImageLoadTask;
 
@@ -10,7 +11,11 @@ public class ProductPicture {
     private String url;
     private String description;
     private Product product;
-    private Bitmap bitmap;
+
+    //
+    private Uri uri;
+    private String realpath;
+    //
 
     public int getId() {
         return id;
@@ -44,4 +49,19 @@ public class ProductPicture {
         this.product = product;
     }
 
+    public void setUri(Uri uri) {
+        this.uri = uri;
+    }
+
+    public Uri getUri() {
+        return uri;
+    }
+
+    public void setRealpath(String realpath) {
+        this.realpath = realpath;
+    }
+
+    public String getRealpath() {
+        return realpath;
+    }
 }

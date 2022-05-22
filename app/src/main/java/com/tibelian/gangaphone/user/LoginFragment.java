@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,9 @@ import androidx.fragment.app.Fragment;
 
 import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.database.DatabaseManager;
+import com.tibelian.gangaphone.database.model.User;
 import com.tibelian.gangaphone.product.ListProductActivity;
 
 public class LoginFragment extends Fragment {
@@ -39,7 +43,21 @@ public class LoginFragment extends Fragment {
         mSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Login", "Check credentials");
+
+                Log.e("onclick sigin", "STARTED LOGIN");
+                User loggedIn = new DatabaseManager().getUserByLogin(
+                        mUsernameInput.getText().toString(), mPasswordInput.getText().toString());
+                Log.e("onclick sigin", "ENDED LOGIN");
+
+                if (loggedIn != null) {
+                    Session.get().setUser(loggedIn);
+                    Session.get().setLoggedIn(true);
+                    startActivity(new Intent(getContext(), ListProductActivity.class));
+
+                } else {
+                    Toast.makeText(getActivity(), "Invalid credentials", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {

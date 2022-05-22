@@ -49,7 +49,7 @@ public class ChatListActivity extends AppCompatActivity {
 
     public void loadChats() {
         // obtain msg
-        List<Chat> posts = DatabaseManager.get(this).getChats();
+        List<Chat> posts = new DatabaseManager().getChats();
         mPostAdapter.setPosts(posts);
     }
 

@@ -4,6 +4,7 @@
     <string name="menu_user">My profile</string>
     <string name="menu_back">Go Back</string>
     <string name="menu_logout">Log out</string>
+    <string name="menu_login">Login</string>
     <string name="online">Online</string>
     <string name="offline">Offline</string>
     <string name="write_your_message_here">Write your message here</string>

@@ -19,7 +19,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.async.ImageLoadTask;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
@@ -74,8 +76,9 @@ public class ProductsFragment extends Fragment {
 
     public void reloadProducts() {
         // obtain products
-        List<Product> posts = DatabaseManager.get(getActivity()).getProducts(true);
+        List<Product> posts = new DatabaseManager().getProducts(true);
         mPostAdapter.setPosts(posts);
+        mPostAdapter.notifyDataSetChanged();
         // show results num
         mNumPostsFound.setText(posts.size() + " results found");
     }
@@ -167,6 +170,13 @@ public class ProductsFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.options_main, menu);
+
+        // disable this bottons for guest users
+        if (Session.get().isLoggedIn() == false) {
+            menu.findItem(R.id.menu_msg).setVisible(false);
+            menu.findItem(R.id.menu_user).setTitle(R.string.menu_login);
+        }
+
     }
 
     @Override
@@ -177,7 +187,10 @@ public class ProductsFragment extends Fragment {
                 startActivity(new Intent(getContext(), ChatListActivity.class));
                 return true;
             case R.id.menu_user:
-                startActivity(new Intent(getContext(), ProductListActivity.class));
+                if (Session.get().isLoggedIn())
+                    startActivity(new Intent(getContext(), ProductListActivity.class));
+                else
+                    startActivity(new Intent(getContext(), MainActivity.class)); // login
                 return true;
         }
         return super.onOptionsItemSelected(item);

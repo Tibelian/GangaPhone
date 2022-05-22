@@ -19,9 +19,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
+import com.tibelian.gangaphone.database.model.User;
 import com.tibelian.gangaphone.messenger.ChatListActivity;
 
 import java.util.List;
@@ -45,8 +48,8 @@ public class ProductListActivity extends AppCompatActivity {
         mPostAdapter = new PostListAdapter();
         mPostsRecyclerView.setAdapter(mPostAdapter);
 
-        // @todo load from db only user's products
-        List<Product> posts = DatabaseManager.get(this).getProducts(true);
+        // load the products from the current session
+        List<Product> posts = Session.get().getUser().getProducts();
         mPostAdapter.setPosts(posts);
         mPostAdapter.setContext(this);
 
@@ -146,7 +149,9 @@ public class ProductListActivity extends AppCompatActivity {
                 startActivity(new Intent(ProductListActivity.this, ChatListActivity.class));
                 return true;
             case R.id.menu_user:
-                // @todo logout
+                Session.get().setUser(null);
+                Session.get().setLoggedIn(false);
+                startActivity(new Intent(ProductListActivity.this, MainActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

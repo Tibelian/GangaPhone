@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.database.CurrentFilter;
 import com.tibelian.gangaphone.database.DatabaseManager;
 
@@ -63,6 +64,13 @@ public class ListProductActivity extends AppCompatActivity {
     private void searchProducts() {
         //mCurrentSearchText.setText(CurrentFilter.getSearch());
         ((ProductsFragment) mProductsFragment).reloadProducts();
+    }
+
+
+    public void onBackPressed() {
+        if (Session.get().isLoggedIn())
+            return;
+        super.onBackPressed();
     }
 
 }

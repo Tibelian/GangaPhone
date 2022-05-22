@@ -1,162 +1,160 @@
 package com.tibelian.gangaphone.database;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.api.HttpRequest;
 import com.tibelian.gangaphone.database.model.Chat;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.database.model.ProductPicture;
 import com.tibelian.gangaphone.database.model.User;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class DatabaseManager {
-
-    private static DatabaseManager sDatabaseManager;
-    private Context mContext;
-    private Connection conn;
-
-    /**
-     * Create connection. Obtain credentials using the static Database object
-     */
-    private void connect() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                    Configuration.URL, Configuration.DB_USER, Configuration.DB_PASS);
-        }
-        catch(Exception e) {
-            Log.e("DatabaseManager", "connection error: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Close connection
-     */
-    private void closeConnection() {
-        try { conn.close(); }
-        catch(Exception e) {}
-    }
-
-    private DatabaseManager(Context context) {
-        mContext = context.getApplicationContext();
-        connect();
-    }
-
-    public static DatabaseManager get(Context context) {
-        if (sDatabaseManager == null)
-            sDatabaseManager = new DatabaseManager(context);
-        return sDatabaseManager;
-    }
 
     public List<Product> getProducts(boolean useMainFilter) {
 
         // list of products
         ArrayList<Product> list = new ArrayList<>();
 
-        // prepare query str
-        String query = "SELECT p.*, p.id as pid, u.id as uid, pp.url AS thumbnail " +
-                "FROM product p LEFT JOIN user u ON p.user_id = u.id " +
-                "LEFT JOIN product_picture pp ON p.id = pp.product_id " +
-                "WHERE p.sold = 0" + (useMainFilter ? getFilterQuery() : "") +
-                " GROUP BY p.id;";
-
         try {
-            // create statement
-            Statement stm = conn.createStatement();
+            // http request to api for products
+            HttpRequest req = new HttpRequest(HttpRequest.API_URL_SEARCH_PRODUCTS);
+            req.addParam("filter", CurrentFilter.toJson());
+            req.init();
+            req.start();
+            req.join();
 
-            // execute
-            if (stm.execute(query)) {
-                ResultSet result = stm.getResultSet();
-                while (result.next()) {
+            String response = req.getResponse();
+            Log.e("getProducts", "response --> " + response);
+
+            // mapping result
+            // { status: ok, data: [] }
+            JsonObject jsonRes = new Gson().fromJson(response, JsonObject.class);
+            if (jsonRes.get("status").getAsString().equals("ok")) {
+
+                JsonArray jProducts = jsonRes.get("data").getAsJsonArray();
+                for(JsonElement jp:jProducts) {
+
                     User pu = new User();
                     Product p = new Product();
-                    ProductPicture pp = new ProductPicture();
                     ArrayList<ProductPicture> ppList = new ArrayList<>();
-                    ppList.add(pp);
-                    p.setId(result.getInt("id"));
-                    p.setName(result.getString("name"));
-                    p.setPrice(result.getFloat("price"));
-                    p.setStatus(result.getString("status"));
-                    p.setSold(result.getBoolean("sold"));
-                    p.setVisits(result.getInt("visits"));
+                    ProductPicture pp = new ProductPicture();
                     p.setOwner(pu);
-                    pu.setId(result.getInt("uid"));
-                    pu.setUsername(result.getString("username"));
-                    pu.setLocation(result.getString("location"));
-                    pp.setUrl(result.getString("thumbnail"));
                     p.setPictures(ppList);
+                    ppList.add(pp);
+
+                    p.setId(jp.getAsJsonObject().get("pid").getAsInt());
+                    p.setName(jp.getAsJsonObject().get("name").getAsString());
+                    p.setPrice(jp.getAsJsonObject().get("price").getAsFloat());
+                    p.setStatus(jp.getAsJsonObject().get("status").getAsString());
+                    p.setSold(jp.getAsJsonObject().get("sold").getAsBoolean());
+                    p.setVisits(jp.getAsJsonObject().get("visits").getAsInt());
+
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd hh:mm:ss", Locale.ENGLISH);
+                    formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+                    try {
+                        p.setDate(formatter.parse(jp.getAsJsonObject().get("date").getAsString()));
+                    } catch (ParseException e) {}
+
+                    pu.setId(jp.getAsJsonObject().get("uid").getAsInt());
+                    pu.setLocation(jp.getAsJsonObject().get("location").getAsString());
+
+                    try {
+                        pp.setUrl(jp.getAsJsonObject().get("thumbnail").getAsString());
+                        // catch exception if thumbnail is null
+                    } catch(Exception e) {};
+
                     list.add(p);
                 }
+
+            } else {
+                Log.e("api", "error status");
             }
-            stm.close();
-        } catch(Exception e) {
-            Log.e("DatabaseManager", "exception: " + e.getMessage());
+        }
+        catch (InterruptedException | IOException e) {
+            Log.e("getProducts", "error --> " + e);
         }
 
         return list;
     }
 
-    private String getFilterQuery() {
-        String query = "";
+    public Product getProduct(int productId) {
+        // the product object
+        Product product = new Product();
 
-        // status
-        if (CurrentFilter.status.size() > 0) {
-            query += " AND p.status IN (";
-            for (int i = 0; i < CurrentFilter.status.size(); i++) {
-                if (i != 0) query += ",";
-                query += CurrentFilter.status.get(i);
+        // http request to api
+        try {
+            HttpRequest req = new HttpRequest(HttpRequest.API_URL_FIND_PRODUCT);
+            req.replaceRoute("{id}", productId);
+            req.init();
+            req.start();
+            req.join();
+
+            String response = req.getResponse();
+
+            // mapping result
+            // { status: ok, data: {} }
+            JsonObject jsonRes = new Gson().fromJson(response, JsonObject.class);
+            if (jsonRes.get("status").getAsString().equals("ok")) {
+
+                JsonObject jp = jsonRes.get("data").getAsJsonObject();
+                product.setId(jp.get("id").getAsInt());
+                product.setName(jp.get("name").getAsString());
+                product.setDescription(jp.get("description").getAsString());
+                product.setStatus(jp.get("status").getAsString());
+                product.setPrice(jp.get("price").getAsFloat());
+                product.setSold(jp.get("sold").getAsBoolean());
+                product.setVisits(jp.get("visits").getAsInt());
+
+                SimpleDateFormat f = new SimpleDateFormat("yyyy-M-dd hh:mm:ss", Locale.ENGLISH);
+                f.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+                try { product.setDate(f.parse(jp.get("date").getAsString())); }
+                catch (ParseException e) {}
+
+                ArrayList<ProductPicture> productPictures = new ArrayList<>();
+                product.setPictures(productPictures);
+                JsonArray jpp = jp.get("pictures").getAsJsonArray();
+                for(JsonElement jPic:jpp) {
+                    ProductPicture ppP = new ProductPicture();
+                    ppP.setUrl(jPic.getAsJsonObject().get("url").getAsString());
+                    ppP.setId(jPic.getAsJsonObject().get("id").getAsInt());
+                    productPictures.add(ppP);
+                }
+
+                User productOwner = new User();
+                product.setOwner(productOwner);
+                JsonObject jpu = jp.get("user").getAsJsonObject();
+                productOwner.setId(jpu.get("id").getAsInt());
+                productOwner.setUsername(jpu.get("username").getAsString());
+                productOwner.setEmail(jpu.get("email").getAsString());
+                productOwner.setPhone(jpu.get("phone").getAsString());
+                productOwner.setLocation(jpu.get("location").getAsString());
+
+            } else {
+                Log.e("getProduct api", "error status");
             }
-            query += ")";
+        }
+        catch (IOException | InterruptedException e) {
+            Log.e("getProduct", "error --> " + e);
         }
 
-        // keyword
-        if (CurrentFilter.keyword.length() > 2)
-            query += " AND (p.name LIKE = '%" + CurrentFilter.keyword + "%' OR " +
-                    "p.description LIKE = '%" + CurrentFilter.keyword + "%')";
-
-        // location
-        if (CurrentFilter.location.length() > 0)
-            query += " AND u.location = '"+ CurrentFilter.location +"'";
-
-        // price
-        if (CurrentFilter.maxPrice > -1)
-            query += " AND p.price < " + CurrentFilter.maxPrice;
-        if (CurrentFilter.minPrice > -1)
-            query += " AND p.price > " + CurrentFilter.minPrice;
-
-        // order
-        switch (CurrentFilter.orderBy) {
-            case "date.asc":
-                query += " ORDER BY p.date ASC"; break;
-            case "date.desc":
-                query += " ORDER BY p.date DESC"; break;
-            case "price.asc":
-                query += " ORDER BY p.price ASC"; break;
-            case "price.desc":
-                query += " ORDER BY p.price DESC"; break;
-            case "featured":
-                query += " ORDER BY p.visits DESC"; break;
-        }
-
-        return query;
+        return product;
     }
 
     public List<Chat> getChats() {
@@ -184,29 +182,6 @@ public class DatabaseManager {
         chats.add(c2);
 
         return chats;
-    }
-
-    public Product getProduct(int productId) {
-
-        // @todo select form database
-
-        // test
-        List<Product> products = getProducts(true);
-        for(Product p:products) {
-            if (p.getId() == productId) return p;
-        }
-
-        return null;
-    }
-
-    public User getUser(String username) {
-
-        // @todo select form database
-
-        User yo = new User();
-        yo.setUsername("tiberiu");
-
-        return yo;
     }
 
     public List<Message> getMessages(User receiver) {
@@ -253,17 +228,164 @@ public class DatabaseManager {
         return false;
     }
 
-    public List<ProductPicture> getProductPictures() {
+    public int saveProduct(Product product, boolean isNew) {
+        try {
 
-        ArrayList<ProductPicture> imgs = new ArrayList<>();
+            HttpRequest req = new HttpRequest(
+                    isNew ? HttpRequest.API_URL_INSERT_PRODUCT
+                            : HttpRequest.API_URL_UPDATE_PRODUCT);
 
-        ProductPicture p1 = new ProductPicture();
-        p1.setUrl("https://www.journaldugeek.com/wp-content/blogs.dir/1/files/2017/02/blackberry-keyone-02.png");
+            if (!isNew)
+                product.setOwner(Session.get().getUser());
 
-        imgs.add(p1);
+            int pCounter = 0;
+            ArrayList<ProductPicture> pics = product.getPictures();
+            for(int i = 0; i < pics.size(); i++) {
+                if (pics.get(i).getUri() != null) {
+                    req.addFile("picture" + pCounter, new File(pics.get(i).getRealpath()));
+                    product.getPictures().remove(i);
+                    i--; pCounter++;
+                }
+            }
+            req.addParam("product", new Gson().toJson(product));
 
+            req.init();
+            req.start();
+            req.join();
 
-        return imgs;
+            String response = req.getResponse();
+            Log.e("saveProduct", "response --> " + response);
 
+            JsonObject jsonRes = new Gson().fromJson(response, JsonObject.class);
+            if (jsonRes.get("status").getAsString().equals("ok")) {
+                return jsonRes.get("data").getAsInt(); // product's id
+            }
+        }
+        catch (IOException | InterruptedException e) {
+            Log.e("saveProduct", "error --> " + e);
+        }
+        return -1;
     }
+
+
+    public boolean deleteProduct(Product mProduct) {
+        return false;
+    }
+
+
+
+
+
+
+
+    public int createUser(User user) {
+        try {
+            HttpRequest req = new HttpRequest(HttpRequest.API_URL_INSERT_USER);
+            req.addParam("user", new Gson().toJson(user));
+
+            req.init();
+            req.start();
+            req.join();
+
+            String response = req.getResponse();
+            Log.e("createUser", "response --> " + response);
+
+            JsonObject jsonRes = new Gson().fromJson(response, JsonObject.class);
+            if (jsonRes.get("status").getAsString().equals("ok")) {
+                return jsonRes.get("data").getAsInt(); // users's id
+            }
+        }
+        catch (IOException | InterruptedException e) {
+            Log.e("createUser", "error --> " + e);
+        }
+        return -1;
+    }
+
+    private User getUser(String json) {
+        User u = new User();
+        try {
+            HttpRequest req = new HttpRequest(HttpRequest.API_URL_FIND_USER);
+            req.addParam("user", json);
+
+            req.init();
+            req.start();
+            req.join();
+
+            String response = req.getResponse();
+            Log.e("getUser", "response --> " + response);
+
+            JsonObject jsonRes = new Gson().fromJson(response, JsonObject.class);
+            if (jsonRes.get("status").getAsString().equals("ok")) {
+
+                if (jsonRes.get("data").getAsJsonObject().get("id") == null)
+                    return null; // not found
+
+                JsonObject udObj = jsonRes.get("data").getAsJsonObject();
+                u.setId(udObj.get("id").getAsInt());
+                u.setUsername(udObj.get("username").getAsString());
+                //u.setPassword(udObj.get("password").getAsString());
+                u.setEmail(udObj.get("email").getAsString());
+                u.setLocation(udObj.get("location").getAsString());
+                u.setPhone(udObj.get("phone").getAsString());
+
+                ArrayList<Product> upList = new ArrayList<>();
+                u.setProducts(upList);
+                JsonArray upa = udObj.get("products").getAsJsonArray();
+                for (JsonElement upe:upa) {
+                    JsonObject upeObj = upe.getAsJsonObject();
+                    Product up = new Product();
+                    upList.add(up);
+
+                    up.setId(upeObj.get("id").getAsInt());
+                    up.setName(upeObj.get("name").getAsString());
+                    up.setDescription(upeObj.get("description").getAsString());
+                    up.setStatus(upeObj.get("status").getAsString());
+                    up.setPrice(upeObj.get("price").getAsFloat());
+                    up.setSold(upeObj.get("sold").getAsBoolean());
+                    up.setVisits(upeObj.get("visits").getAsInt());
+
+                    SimpleDateFormat f = new SimpleDateFormat("yyyy-M-dd hh:mm:ss", Locale.ENGLISH);
+                    f.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+                    try { up.setDate(f.parse(upeObj.get("date").getAsString())); }
+                    catch (ParseException e) {}
+
+                    ArrayList<ProductPicture> uppList = new ArrayList<>();
+                    up.setPictures(uppList);
+
+                    JsonArray uppa = upeObj.get("pictures").getAsJsonArray();
+                    for(JsonElement uppe:uppa) {
+                        JsonObject uppObj = uppe.getAsJsonObject();
+                        ProductPicture upp = new ProductPicture();
+                        uppList.add(upp);
+                        upp.setId(uppObj.get("id").getAsInt());
+                        upp.setUrl(uppObj.get("url").getAsString());
+                    }
+                }
+            } // end if status == ok
+        }
+        catch (IOException | InterruptedException e) {
+            Log.e("getUser", "error --> " + e);
+        }
+        return u;
+    }
+
+    public User getUserById(int id) {
+        return getUser("{\"id\":"+id+"}");
+    }
+    public User getUserByUsername(String username) {
+        return getUser("{\"username\":\""+username+"\"}");
+    }
+    public User getUserByLogin(String username, String password) {
+        return getUser("{\"username\":\""+username+"\", \"password\":\""+password+"\"}");
+    }
+
+
+
+
+
+
+
+
+
+
 }

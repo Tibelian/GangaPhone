@@ -49,6 +49,7 @@
                 android:layout_height="wrap_content">
                 <EditText
                     android:id="@+id/edit_pName"
+                    android:inputType="text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -69,6 +70,7 @@
                 android:layout_height="wrap_content">
                 <EditText
                     android:id="@+id/edit_pPrice"
+                    android:inputType="numberDecimal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
@@ -114,34 +116,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/edit_pStatus" />
-        <LinearLayout
+        <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:background="@color/background_secondary"
             android:orientation="horizontal">
-            <CheckBox
+            <RadioButton
                 android:id="@+id/edit_pStatusNew"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="New"
                 android:textSize="13dp" />
-            <CheckBox
+            <RadioButton
                 android:id="@+id/edit_pStatusScratched"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Scratched"
                 android:textSize="13dp" />
-            <CheckBox
+            <RadioButton
                 android:id="@+id/edit_pStatusBroken"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Broken"
                 android:textSize="13dp" />
-        </LinearLayout>
+        </RadioGroup>
     </LinearLayout>
 
     <!-- images -->
