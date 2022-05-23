@@ -146,13 +146,12 @@ public class HttpRequest extends Thread {
             response = res.toString();
             reader.close();
 
-            connection.disconnect();
-
         } else {
             Log.e("HttpRequest error", "RESPONSE CODE --> " + responseCode);
             Log.e("HttpRequest error", "url --> " + url);
         }
 
+        connection.disconnect();
     }
 
 
