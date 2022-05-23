@@ -317,8 +317,10 @@ public class DatabaseManager {
             JsonObject jsonRes = new Gson().fromJson(response, JsonObject.class);
             if (jsonRes.get("status").getAsString().equals("ok")) {
 
-                if (jsonRes.get("data").getAsJsonObject().get("id") == null)
-                    return null; // not found
+                try {
+                    if (jsonRes.get("data").getAsJsonObject().get("id") == null)
+                        return null; // not found
+                } catch (IllegalStateException ie) { return null; }
 
                 JsonObject udObj = jsonRes.get("data").getAsJsonObject();
                 u.setId(udObj.get("id").getAsInt());
