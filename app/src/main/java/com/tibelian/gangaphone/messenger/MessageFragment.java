@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.text.style.AlignmentSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,10 +26,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.User;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +60,11 @@ public class MessageFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         String username = getArguments().getString(ARG_USERNAME, "");
-        mUser = new DatabaseManager().getUserByUsername(username);
+        try {
+            mUser = new RestApi().findUserByUsername(username);
+        } catch (IOException e) {
+            Log.e("MessageFragment", "error --> " + e);
+        }
 
     }
 

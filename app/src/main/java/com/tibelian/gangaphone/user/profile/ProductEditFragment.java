@@ -1,6 +1,7 @@
 package com.tibelian.gangaphone.user.profile;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -37,6 +38,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.database.model.ProductPicture;
@@ -139,21 +141,7 @@ public class ProductEditFragment extends Fragment {
         mSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(
-                        getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_GRANTED) {
-
-                    // ALL GOOD - we have permission
-                    int pId = new DatabaseManager().saveProduct(mProduct, isNew);
-                    if (pId != -1)
-                        startActivity(ProductPagerActivity.newIntent(getActivity(), pId));
-                    else
-                        Toast.makeText(getActivity(), R.string.error_newProduct, Toast.LENGTH_LONG).show();
-
-                } else {
-                    requestPermissionLauncher.launch(
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                }
+                saveCurrentProduct();
             }
         });
 
@@ -261,7 +249,7 @@ public class ProductEditFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQUEST_PHOTO) {
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_PHOTO) {
 
             Uri imageUri = data.getData();
 
@@ -273,7 +261,6 @@ public class ProductEditFragment extends Fragment {
             mImagesFragment.loadImages(mProduct.getPictures());
         }
     }
-
 
 
     private String getRealPathFromUri(Uri contentUri) {
@@ -288,5 +275,32 @@ public class ProductEditFragment extends Fragment {
             if (cursor != null)  cursor.close();
         }
     }
+
+
+    private void saveCurrentProduct() {
+        if (ContextCompat.checkSelfPermission(
+                getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED) {
+            // ALL GOOD - we have permission
+            try {
+                if (isNew) {
+                    mProduct = new RestApi().createProduct(mProduct);
+                    Session.get().getUser().getProducts().add(mProduct);
+                }
+                else
+                    mProduct = new RestApi().updateProduct(mProduct);
+            } catch (IOException io) {
+                Log.e("ProductEditFragment", "mSaveBtn onclick --> " + io);
+            }
+            if (mProduct.getId() != 0)
+                startActivity(ProductPagerActivity.newIntent(getActivity(), mProduct.getId()));
+            else
+                Toast.makeText(getActivity(), R.string.error_newProduct, Toast.LENGTH_LONG).show();
+        } else {
+            requestPermissionLauncher.launch(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
 
 }

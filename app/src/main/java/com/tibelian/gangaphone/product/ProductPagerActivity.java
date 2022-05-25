@@ -3,6 +3,7 @@ package com.tibelian.gangaphone.product;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,9 +13,13 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductPagerActivity extends AppCompatActivity {
@@ -22,7 +27,9 @@ public class ProductPagerActivity extends AppCompatActivity {
     private static final String EXTRA_PRODUCT_ID = "current_product_id";
 
     private ViewPager2 mViewPager;
-    private List<Product> mProducts;
+    private ArrayList<Product> mProducts;
+
+    private ArrayList<Integer> visitedProducts = new ArrayList<>();
 
     public static Intent newIntent(Context packageContext, int productId) {
         Intent intent = new Intent(packageContext, ProductPagerActivity.class);
@@ -37,7 +44,11 @@ public class ProductPagerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product_pager);
 
         //
-        mProducts = new DatabaseManager().getProducts(true);
+        try {
+            mProducts = new RestApi().searchProducts(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //
         initViewPager();
@@ -58,14 +69,38 @@ public class ProductPagerActivity extends AppCompatActivity {
             @NonNull
             @Override
             public Fragment createFragment(int position) {
-                Product product = mProducts.get(position);
-                return ProductDetailsFragment.newInstance(product.getId());
+                Product currentProduct = mProducts.get(position);
+                updateVisits(currentProduct);
+                return ProductDetailsFragment.newInstance(currentProduct.getId());
             }
             @Override
             public int getItemCount() {
                 return mProducts.size();
             }
         });
+    }
+
+    private void updateVisits(Product current) {
+
+        // do not update visits if product belongs to the logged in user
+        if (Session.get().getUser().getProducts().contains(current))
+            return;
+
+        // if first time viewing item then increase the product visits
+        if (!visitedProducts.contains(current.getId()))
+        {
+            visitedProducts.add(current.getId());
+            try {
+
+                new RestApi().addProductVisit(current.getId());
+
+                // update also the product from the memory
+                current.setVisits(current.getVisits() + 1);
+
+            } catch (IOException e) {
+                Log.e("ProductPagerActivity", "updateVisits error --> " + e);
+            }
+        }
     }
 
 }

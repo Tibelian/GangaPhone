@@ -18,9 +18,12 @@ import androidx.fragment.app.Fragment;
 import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.User;
 import com.tibelian.gangaphone.product.ListProductActivity;
+
+import java.io.IOException;
 
 public class LoginFragment extends Fragment {
 
@@ -45,11 +48,16 @@ public class LoginFragment extends Fragment {
             public void onClick(View view) {
 
                 Log.e("onclick sigin", "STARTED LOGIN");
-                User loggedIn = new DatabaseManager().getUserByLogin(
-                        mUsernameInput.getText().toString(), mPasswordInput.getText().toString());
+                User loggedIn = null;
+                try {
+                    loggedIn = new RestApi().findUserByLogin(
+                            mUsernameInput.getText().toString(), mPasswordInput.getText().toString());
+                } catch (IOException e) {
+                    Log.e("LoginFragment", "error -> " + e);
+                }
                 Log.e("onclick sigin", "ENDED LOGIN");
 
-                if (loggedIn != null) {
+                if (loggedIn != null && loggedIn.getId() != 0) {
                     Session.get().setUser(loggedIn);
                     Session.get().setLoggedIn(true);
                     startActivity(new Intent(getContext(), ListProductActivity.class));

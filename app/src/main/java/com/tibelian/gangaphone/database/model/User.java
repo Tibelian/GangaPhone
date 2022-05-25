@@ -10,8 +10,8 @@ public class User {
     private String email;
     private String phone;
     private String location;
-    private ArrayList<Product> products;
-    private ArrayList<Message> messages;
+    private ArrayList<Product> products = new ArrayList<>();
+    private ArrayList<Message> messages = new ArrayList<>();
     private boolean isOnline;
 
     public int getId() {

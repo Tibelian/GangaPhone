@@ -18,9 +18,12 @@ import androidx.fragment.app.Fragment;
 import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.User;
 import com.tibelian.gangaphone.product.ListProductActivity;
+
+import java.io.IOException;
 
 public class RegisterFragment extends Fragment {
 
@@ -67,7 +70,11 @@ public class RegisterFragment extends Fragment {
                 // if no permission the use ip location
                 registered.setLocation("unknown");
 
-                int id = new DatabaseManager().createUser(registered);
+                int id = -1;
+                try { id = new RestApi().createUser(registered); }
+                catch (IOException e) {
+                    Log.e("RegisterFragment", "createUser --> " + e);
+                }
                 if (id != -1) {
                     registered.setId(id);
                     Session.get().setUser(registered);

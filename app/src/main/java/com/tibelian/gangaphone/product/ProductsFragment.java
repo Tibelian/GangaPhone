@@ -22,12 +22,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.async.ImageLoadTask;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.messenger.ChatListActivity;
 import com.tibelian.gangaphone.user.profile.ProductListActivity;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -76,7 +79,13 @@ public class ProductsFragment extends Fragment {
 
     public void reloadProducts() {
         // obtain products
-        List<Product> posts = new DatabaseManager().getProducts(true);
+        ArrayList<Product> posts = new ArrayList<>();
+        try {
+            posts = new RestApi().searchProducts(true);
+        } catch (IOException e) {
+            Log.e("ProductFragment", "reloadProducts error --> " + e);
+            e.printStackTrace();
+        }
         mPostAdapter.setPosts(posts);
         mPostAdapter.notifyDataSetChanged();
         // show results num

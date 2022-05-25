@@ -19,12 +19,15 @@ import androidx.fragment.app.Fragment;
 
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.api.OkHttpHandler;
+import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.async.ImageLoadTask;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.messenger.ChatActivity;
 import com.tibelian.gangaphone.messenger.ChatListActivity;
 
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +64,11 @@ public class ProductDetailsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         int productId = getArguments().getInt(ARG_PRODUCT_ID, 0);
-        mProduct = new DatabaseManager().getProduct(productId);
+        try {
+            mProduct = new RestApi().findProduct(productId);
+        } catch (IOException e) {
+            Log.e("ProductDetailsFragment", "findProduct --> " + e);
+        }
     }
 
     @Nullable
