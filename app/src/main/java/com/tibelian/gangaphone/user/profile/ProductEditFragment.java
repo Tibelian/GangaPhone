@@ -67,7 +67,10 @@ public class ProductEditFragment extends Fragment {
     private Button mRemoveBtn;
     private Button mSaveBtn;
     private LinearLayout mTotalViews;
+    private TextView mTotalViewsCounter;
     private CheckBox mSold;
+
+    public ArrayList<Integer> picturesToDelete = new ArrayList<>();
 
     private ActivityResultLauncher<String> requestPermissionLauncher =
         registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -78,8 +81,6 @@ public class ProductEditFragment extends Fragment {
                         "Can't save the product because we don't have permission", Toast.LENGTH_LONG).show();
             }
     });
-
-
 
     public static ProductEditFragment newInstance(int productId) {
         Bundle args = new Bundle();
@@ -161,6 +162,7 @@ public class ProductEditFragment extends Fragment {
         mRemoveBtn = v.findViewById(R.id.edit_pDelete);
         mSaveBtn = v.findViewById(R.id.edit_pSave);
         mTotalViews = v.findViewById(R.id.edit_pViewsContainer);
+        mTotalViewsCounter = v.findViewById(R.id.edit_pViews);
         mSold = v.findViewById(R.id.edit_pSold);
 
         // events on change values
@@ -225,6 +227,7 @@ public class ProductEditFragment extends Fragment {
                     .runOnCommit(new Runnable() {
                         @Override
                         public void run() {
+                            Log.e("ImagesFragment", "runOnCommit loading " + mProduct.getPictures().size() + " pictures");
                             mImagesFragment.loadImages(mProduct.getPictures());
                         }
                     })
@@ -243,6 +246,8 @@ public class ProductEditFragment extends Fragment {
             // show info
             mTotalViews.setVisibility(View.VISIBLE);
             mSold.setVisibility(View.VISIBLE);
+            mSold.setChecked(mProduct.isSold());
+            mTotalViewsCounter.setText(mProduct.getVisits()+"");
         }
 
     }
@@ -283,12 +288,22 @@ public class ProductEditFragment extends Fragment {
                 PackageManager.PERMISSION_GRANTED) {
             // ALL GOOD - we have permission
             try {
+
                 if (isNew) {
                     mProduct = new RestApi().createProduct(mProduct);
                     Session.get().getUser().getProducts().add(mProduct);
                 }
-                else
+                else {
+                    // delete pictures from temp object
+                    int i = 0;
+                    for(ProductPicture pp:mProduct.getPictures()) {
+                        if (picturesToDelete.contains(pp.getId()))
+                            mProduct.getPictures().remove(i);
+                        else i++;
+                    }
+                    picturesToDelete.clear();
                     mProduct = new RestApi().updateProduct(mProduct);
+                }
             } catch (IOException io) {
                 Log.e("ProductEditFragment", "mSaveBtn onclick --> " + io);
             }

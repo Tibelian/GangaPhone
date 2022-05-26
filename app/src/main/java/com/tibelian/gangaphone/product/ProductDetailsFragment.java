@@ -125,7 +125,7 @@ public class ProductDetailsFragment extends Fragment {
                             "MUST LOGIN TO USE THIS OPTION", Toast.LENGTH_LONG).show();
                 } else {
                     startActivity(ChatActivity.newIntent(
-                            getActivity(), mProduct.getOwner().getUsername()));
+                            getActivity(), mProduct.getOwner().getId()));
                 }
             }
         });

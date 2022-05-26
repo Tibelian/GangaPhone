@@ -53,8 +53,6 @@ public class ProductListActivity extends AppCompatActivity {
         mPostAdapter.setPosts(posts);
         mPostAdapter.setContext(this);
         mPostAdapter.notifyDataSetChanged();
-        Log.e("profProductListActivity", "onCreate posts --> " + posts.size());
-        Log.e("profProductListActivity", "onCreate username --> " + Session.get().getUser().getUsername());
 
         //
         mAddProductBtn = findViewById(R.id.profile_addProduct);

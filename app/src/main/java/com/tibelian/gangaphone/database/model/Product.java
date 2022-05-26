@@ -23,6 +23,16 @@ public class Product implements Cloneable {
             return null;
         }
     }
+
+    public void removePicture(int id) {
+        for(ProductPicture pic:pictures) {
+            if (pic.getId() == id) {
+                pictures.remove(pic);
+                return;
+            }
+        }
+    }
+
     public int getId() {
         return id;
     }

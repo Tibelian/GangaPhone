@@ -4,11 +4,20 @@ import java.util.Date;
 
 public class Message {
 
+    private int id;
     private String content;
     private Date date;
     private boolean read;
     private User to;
     private User from;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getContent() {
         return content;

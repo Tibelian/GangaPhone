@@ -13,12 +13,12 @@ import com.tibelian.gangaphone.R;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private static final String EXTRA_USERNAME = "current_username";
-    private String username;
+    private static final String EXTRA_USER_ID = "current_user_id";
+    private int uid;
 
-    public static Intent newIntent(Context packageContext, String username){
+    public static Intent newIntent(Context packageContext, int uid){
         Intent intent = new Intent(packageContext, ChatActivity.class);
-        intent.putExtra(EXTRA_USERNAME, username);
+        intent.putExtra(EXTRA_USER_ID, uid);
         return intent;
     }
 
@@ -28,8 +28,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // obtain username from intent
-        username = getIntent().getStringExtra(EXTRA_USERNAME);
+        // obtain user from intent
+        uid = getIntent().getIntExtra(EXTRA_USER_ID, 0);
 
         // load messages
         initMessagesFragment();
@@ -41,7 +41,7 @@ public class ChatActivity extends AppCompatActivity {
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
 
         if(fragment == null){
-            fragment = MessageFragment.newInstance(username);
+            fragment = MessageFragment.newInstance(uid);
             fragmentManager.beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commit();

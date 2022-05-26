@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,10 +19,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.api.JsonMapper;
+import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Chat;
+import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.user.profile.ProductListActivity;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListActivity extends AppCompatActivity {
@@ -42,27 +49,39 @@ public class ChatListActivity extends AppCompatActivity {
         mPostAdapter = new PostListAdapter();
         mPostsRecyclerView.setAdapter(mPostAdapter);
 
-        // load messages form db
-        loadChats();
+        // load messages
+        loadChats(false);
     }
 
 
-    public void loadChats() {
-        // obtain msg
-        List<Chat> posts = new DatabaseManager().getChats();
-        mPostAdapter.setPosts(posts);
+    public void loadChats(boolean fromDatabase) {
+        Log.d("ChatListActivity", "executing loadChats");
+        try {
+            if (fromDatabase)
+                Session.get().getUser().setChats(JsonMapper.mapChats(
+                        new RestApi().findMessages(Session.get().getUser().getId())
+                ));
+            mPostAdapter.setPosts(Session.get().getUser().getChats());
+            mPostAdapter.notifyDataSetChanged();
+            Log.d("ChatListActivity", "notified adapter loadChats");
+        } catch (IOException io) {
+            Log.e("ChatListActivity", "loadChats error --> " + io);
+        }
+        Log.d("ChatListActivity", "finished loadChats");
     }
 
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
 
-        private List<Chat> mPosts;
+        private ArrayList<Chat> mPosts = new ArrayList<>();
         public void setPosts(List<Chat> posts) {
-            mPosts = posts;
+            mPosts.clear();
+            for(Chat c:posts) mPosts.add(c);
         }
 
         @NonNull
         @Override
         public PostListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            Log.d("ChatListActivity", "executing onCreateViewHolder");
             return new PostListAdapter.ViewHolder(
                     LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.list_item_chat, parent, false)
@@ -72,6 +91,7 @@ public class ChatListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(PostListAdapter.ViewHolder viewHolder, final int position) {
             viewHolder.chat = ( (Chat) (mPosts.get(position)) );
+            Log.d("ChatListActivity", "onBindViewHolder num chats --> " + mPosts.size());
             viewHolder.bind();
         }
 
@@ -90,13 +110,13 @@ public class ChatListActivity extends AppCompatActivity {
 
             public ViewHolder(View v) {
                 super(v);
-
+                Log.d("ChatListActivity", "executing ViewHolder constructor");
                 // on click item show product details
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startActivity(ChatActivity.newIntent(
-                                ChatListActivity.this, chat.getUser().getUsername()));
+                                ChatListActivity.this, chat.getUser().getId()));
                     }
                 });
 
@@ -110,14 +130,16 @@ public class ChatListActivity extends AppCompatActivity {
 
             public void bind()
             {
+
+                Message lastMsg = chat.getMessages().get(chat.getMessages().size() - 1);
                 String timeAgo = DateUtils.getRelativeTimeSpanString(
-                        chat.getLastDate().getTime()).toString();
+                        lastMsg.getDate().getTime()).toString();
 
                 // bind data
                 mDate.setText(timeAgo);
                 mRecipient.setText(chat.getUser().getUsername());
-                mLastMsg.setText(chat.getLastMessage());
-                mLastMsg.setTextColor(chat.isRead() ? Color.GRAY : Color.BLACK);
+                mLastMsg.setText(lastMsg.getContent());
+                mLastMsg.setTextColor(lastMsg.isRead() ? Color.GRAY : Color.BLACK);
                 mOnline.setText(chat.getUser().isOnline() ? R.string.online : R.string.offline);
                 mOnline.setAllCaps(false);
             }

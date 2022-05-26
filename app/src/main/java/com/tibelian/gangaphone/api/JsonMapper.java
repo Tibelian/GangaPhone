@@ -1,8 +1,12 @@
 package com.tibelian.gangaphone.api;
 
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.tibelian.gangaphone.Session;
+import com.tibelian.gangaphone.database.model.Chat;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.database.model.ProductPicture;
@@ -11,28 +15,33 @@ import com.tibelian.gangaphone.database.model.User;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
 public class JsonMapper {
 
-    public static Message mapMessage(JsonObject data, boolean parseRelations) {
+    public static Message mapMessage(JsonObject data) {
         Message m = new Message();
 
         m.setContent(data.get("content").getAsString());
-        m.setRead(data.get("read").getAsBoolean());
+        m.setRead(data.get("is_read").getAsBoolean());
 
         SimpleDateFormat f = new SimpleDateFormat("yyyy-M-dd hh:mm:ss", Locale.ENGLISH);
-        f.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+        f.setTimeZone(TimeZone.getTimeZone("Europe/Madrid"));
         try { m.setDate(f.parse(data.get("date").getAsString())); }
         catch (ParseException e) {}
 
-        if (parseRelations) {
-            if (data.get("to") != null && data.get("to").getAsJsonObject() != null)
-                m.setTo(mapUser(data.get("to").getAsJsonObject(), false));
-            if (data.get("from") != null && data.get("from").getAsJsonObject() != null)
-                m.setFrom(mapUser(data.get("from").getAsJsonObject(), false));
-        }
+        User from = new User();
+        from.setId(data.get("sender_uid").getAsInt());
+        from.setUsername(data.get("sender_uname").getAsString());
+        m.setFrom(from);
+
+        User to = new User();
+        to.setId(data.get("receiver_uid").getAsInt());
+        to.setUsername(data.get("receiver_uname").getAsString());
+        m.setTo(to);
+
         return m;
     }
 
@@ -47,23 +56,26 @@ public class JsonMapper {
         p.setVisits(data.get("visits").getAsInt());
         // date format
         SimpleDateFormat f = new SimpleDateFormat("yyyy-M-dd hh:mm:ss", Locale.ENGLISH);
-        f.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+        f.setTimeZone(TimeZone.getTimeZone("Europe/Madrid"));
         try { p.setDate(f.parse(data.get("date").getAsString())); }
         catch (ParseException e) {}
         // check for relations
         if (parseRelations) {
-            ArrayList<ProductPicture> pp = new ArrayList<>();
-            p.setPictures(pp);
-            // map also pictures
-            if (data.get("pictures") != null && data.get("pictures").getAsJsonArray() != null) {
-                JsonArray jpp = data.get("pictures").getAsJsonArray();
-                for(JsonElement jPic:jpp)
-                    pp.add(mapProductPicture(
-                            jPic.getAsJsonObject(), false));
-            }
             // map also the owner
             if (data.get("owner") != null && data.get("owner").getAsJsonObject() != null)
                 p.setOwner(mapUser(data.get("owner").getAsJsonObject(), false));
+        }
+
+        //
+        // always check for pictures
+        //
+        ArrayList<ProductPicture> pp = new ArrayList<>();
+        p.setPictures(pp);
+        if (data.get("pictures") != null && data.get("pictures").getAsJsonArray() != null) {
+            JsonArray jpp = data.get("pictures").getAsJsonArray();
+            for(JsonElement jPic:jpp)
+                pp.add(mapProductPicture(
+                        jPic.getAsJsonObject(), false));
         }
         return p;
     }
@@ -71,13 +83,22 @@ public class JsonMapper {
     public static User mapUser(JsonObject data, boolean parseRelations) {
         User u = new User();
         u.setId(data.get("id").getAsInt());
-        u.setUsername(data.get("username").getAsString());
+        try {
+            u.setUsername(data.get("username").getAsString());
+        } catch(Exception e) {}
         try {
             u.setPassword(data.get("password").getAsString());
         } catch(Exception e) {}
-        u.setEmail(data.get("email").getAsString());
-        u.setPhone(data.get("phone").getAsString());
-        u.setLocation(data.get("location").getAsString());
+        try {
+            u.setEmail(data.get("email").getAsString());
+        } catch(Exception e) {}
+        try {
+            u.setPhone(data.get("phone").getAsString());
+        } catch(Exception e) {}
+        try {
+            u.setLocation(data.get("location").getAsString());
+        } catch(Exception e) {}
+
         if (parseRelations) {
             // map products
             if (data.get("products") != null && data.get("products").getAsJsonArray() != null) {
@@ -85,17 +106,15 @@ public class JsonMapper {
                 u.setProducts(pList);
                 JsonArray jp = data.get("products").getAsJsonArray();
                 for(JsonElement p:jp)
-                    pList.add(mapProduct(
-                            p.getAsJsonObject(), true));
+                    pList.add(mapProduct(p.getAsJsonObject(), true));
             }
             // map messages
             if (data.get("messages") != null && data.get("messages").getAsJsonArray() != null) {
                 ArrayList<Message> mList = new ArrayList<>();
-                u.setMessages(mList);
                 JsonArray jm = data.get("messages").getAsJsonArray();
                 for(JsonElement m:jm)
-                    mList.add(mapMessage(
-                            m.getAsJsonObject(), true));
+                    mList.add(mapMessage(m.getAsJsonObject()));
+                u.setChats(mapChats(mList));
             }
         }
         return u;
@@ -115,4 +134,39 @@ public class JsonMapper {
         return pp;
     }
 
+    public static ArrayList<Chat> mapChats(ArrayList<Message> messages) {
+        ArrayList<Chat> chats = new ArrayList<>();
+        for(Message msg:messages)
+        {
+            boolean added = false;
+            for (Chat chat:chats)
+            {
+                // the prev user sent a message
+                boolean fromPrev = msg.getFrom().getId() == chat.getUser().getId();
+
+                // the prev user received a message
+                boolean toPrev = msg.getTo().getId() == chat.getUser().getId();
+
+                // insert message to the prev chat
+                // if one of the previous options is true
+                if (toPrev || fromPrev) {
+                    chat.getMessages().add(msg);
+                    added = true;
+                    break;
+                }
+            }
+            if (added == false) {
+                Chat newChat = new Chat();
+                chats.add(newChat);
+                newChat.getMessages().add(msg);
+                // detect the target
+                // logged in user cant be the target
+                if (msg.getFrom().getId() == Session.get().getUser().getId())
+                    newChat.setUser(msg.getTo());
+                else
+                    newChat.setUser(msg.getFrom());
+            }
+        }
+        return chats;
+    }
 }

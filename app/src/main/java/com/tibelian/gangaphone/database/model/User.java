@@ -1,5 +1,7 @@
 package com.tibelian.gangaphone.database.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class User {
@@ -11,7 +13,7 @@ public class User {
     private String phone;
     private String location;
     private ArrayList<Product> products = new ArrayList<>();
-    private ArrayList<Message> messages = new ArrayList<>();
+    private ArrayList<Chat> chats = new ArrayList<>();
     private boolean isOnline;
 
     public int getId() {
@@ -70,12 +72,20 @@ public class User {
         this.products = products;
     }
 
-    public ArrayList<Message> getMessages() {
-        return messages;
+    public ArrayList<Chat> getChats() {
+        Log.e("User", "getChats() returned " + chats.size() + " items");
+        return chats;
     }
 
-    public void setMessages(ArrayList<Message> messages) {
-        this.messages = messages;
+    public Chat getChatFrom(int uid) {
+        for (Chat chat:chats)
+            if (chat.getUser().getId() == uid)
+                return chat;
+        return null;
+    }
+
+    public void setChats(ArrayList<Chat> chats) {
+        this.chats = chats;
     }
 
     public boolean isOnline() {
@@ -85,4 +95,5 @@ public class User {
     public void setOnline(boolean online) {
         isOnline = online;
     }
+
 }

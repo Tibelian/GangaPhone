@@ -10,6 +10,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tibelian.gangaphone.database.CurrentFilter;
+import com.tibelian.gangaphone.database.model.Chat;
+import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.database.model.ProductPicture;
 import com.tibelian.gangaphone.database.model.User;
@@ -42,14 +44,17 @@ public class RestApi {
     public static final String API_AUTH                       = "secret";
     public static final String API_URL                        = "https://gangaphone.tibelian.com";
 
-    public static final String API_URL_SEARCH_PRODUCTS        = API_URL + "/product/search";
-    public static final String API_URL_FIND_PRODUCT           = API_URL + "/product/{id}";
-    public static final String API_URL_INSERT_PRODUCT         = API_URL + "/product/new";
-    public static final String API_URL_UPDATE_PRODUCT         = API_URL + "/product/{id}";
-    public static final String API_URL_UPDATE_PRODUCT_VISITS  = API_URL + "/product/{id}/visits";
-    public static final String API_URL_INSERT_USER            = API_URL + "/user/new";
-    public static final String API_URL_FIND_USER              = API_URL + "/user/find";
-
+    public static final String URI_SEARCH_PRODUCTS        = API_URL + "/product/search";
+    public static final String URI_FIND_PRODUCT           = API_URL + "/product/{id}";
+    public static final String URI_INSERT_PRODUCT         = API_URL + "/product/new";
+    public static final String URI_UPDATE_PRODUCT         = API_URL + "/product/{id}";
+    public static final String URI_UPDATE_PRODUCT_VISITS  = API_URL + "/product/{id}/visits";
+    public static final String URI_INSERT_USER            = API_URL + "/user/new";
+    public static final String URI_FIND_USER              = API_URL + "/user/find";
+    public static final String URI_FIND_ALL_MESSAGES      = API_URL + "/message/all/{userId}";
+    public static final String URI_FIND_MESSAGES          = API_URL + "/message/from/{from}/to/{to}";
+    public static final String URI_FIND_MESSAGE           = API_URL + "/message/{id}";
+    public static final String URI_INSERT_MESSAGE         = API_URL + "/message/new";
 
     // MANAGE PRODUCTS
     public ArrayList<Product> searchProducts(boolean useMainFilter) throws IOException {
@@ -91,7 +96,7 @@ public class RestApi {
             params.put("filter", CurrentFilter.toJson());
 
         // execute
-        handler.postForm(API_URL_SEARCH_PRODUCTS, params);
+        handler.postForm(URI_SEARCH_PRODUCTS, params);
 
         return (ArrayList<Product>) syncResult.getResult();
 
@@ -123,7 +128,7 @@ public class RestApi {
 
         // prepare params
         HashMap<String, String> params = new HashMap<>();
-        String url = API_URL_FIND_PRODUCT.replace("{id}", ""+productId);
+        String url = URI_FIND_PRODUCT.replace("{id}", ""+productId);
 
         // execute
         handler.get(url);
@@ -189,7 +194,7 @@ public class RestApi {
         params.put("product", new Gson().toJson(toSend));
 
         // execute
-        handler.postMulti(API_URL_INSERT_PRODUCT, params, files);
+        handler.postMulti(URI_INSERT_PRODUCT, params, files);
 
         return (Product) syncResult.getResult();
     }
@@ -218,7 +223,7 @@ public class RestApi {
         });
 
         // execute
-        String url = API_URL_UPDATE_PRODUCT_VISITS
+        String url = URI_UPDATE_PRODUCT_VISITS
                 .replace("{id}", "" + productId);
         handler.postForm(url, new HashMap<>());
 
@@ -278,6 +283,7 @@ public class RestApi {
                 // pictures that we will keep
                 ProductPicture toKeep = new ProductPicture();
                 toKeep.setId(pic.getId());
+                pics.add(toKeep);
             }
         }
         toSend.setPictures(pics);
@@ -287,7 +293,7 @@ public class RestApi {
         params.put("product", new Gson().toJson(toSend));
 
         // execute
-        String url = API_URL_UPDATE_PRODUCT
+        String url = URI_UPDATE_PRODUCT
                 .replace("{id}", "" + updated.getId());
         handler.postMulti(url, params, files);
 
@@ -297,7 +303,127 @@ public class RestApi {
 
 
     // MANAGE MESSAGES
+    public ArrayList<Message> findMessages(int userId) throws IOException {
 
+        final SyncResult syncResult = new SyncResult();
+        OkHttpHandler handler = new OkHttpHandler(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("onFailure", "findProduct error --> " + e);
+            }
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                // obtain response as json
+                Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
+                JsonObject jsonRes = new Gson().fromJson(resReader, JsonObject.class);
+
+                // check if all is ok and return the messages
+                ArrayList<Message> msgs = new ArrayList<>();
+                if (jsonRes.get("status").getAsString().equals("ok")) {
+                    JsonArray jma = jsonRes.get("data").getAsJsonArray();
+                    for (JsonElement jme : jma)
+                        msgs.add(JsonMapper.mapMessage(jme.getAsJsonObject()));
+                }
+                syncResult.setResult(msgs);
+            }
+        });
+
+        // prepare params
+        String url = URI_FIND_ALL_MESSAGES
+                .replace("{userId}", "" + userId);
+        // execute
+        handler.get(url);
+
+        return (ArrayList<Message>) syncResult.getResult();
+    }
+
+    public ArrayList<Message> findMessages(int from, int to) throws IOException {
+
+        final SyncResult syncResult = new SyncResult();
+        OkHttpHandler handler = new OkHttpHandler(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("onFailure", "findMessages from/to error --> " + e);
+            }
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                // obtain response as json
+                Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
+                JsonObject jsonRes = new Gson().fromJson(resReader, JsonObject.class);
+
+                // check if all is ok and return the messages
+                ArrayList<Message> msgs = new ArrayList<>();
+                if (jsonRes.get("status").getAsString().equals("ok")) {
+                    JsonArray jma = jsonRes.get("data").getAsJsonArray();
+                    for (JsonElement jme : jma)
+                        msgs.add(JsonMapper.mapMessage(jme.getAsJsonObject()));
+                }
+                syncResult.setResult(msgs);
+            }
+        });
+
+        // prepare params
+        String url = URI_FIND_MESSAGES
+                .replace("{from}", "" + from)
+                .replace("{to}", "" + to);
+        // execute
+        handler.get(url);
+
+        return (ArrayList<Message>) syncResult.getResult();
+    }
+
+    public Message findMessage(int id) throws IOException {
+
+        final SyncResult syncResult = new SyncResult();
+        OkHttpHandler handler = new OkHttpHandler(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("onFailure", "findMessage error --> " + e);
+            }
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                // obtain response as json
+                Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
+                JsonObject jsonRes = new Gson().fromJson(resReader, JsonObject.class);
+                // check if all is ok and return the messages
+                if (jsonRes.get("status").getAsString().equals("ok"))
+                    syncResult.setResult(JsonMapper.mapMessage(jsonRes.get("data").getAsJsonObject()));
+                else
+                    syncResult.setResult(null);
+            }
+        });
+
+        // prepare params
+        String url = URI_FIND_MESSAGE
+                .replace("{id}", "" + id);
+        // execute
+        handler.get(url);
+
+        return (Message) syncResult.getResult();
+    }
+
+    public int createMessage(Message created) throws IOException {
+        final SyncResult syncResult = new SyncResult();
+        OkHttpHandler handler = new OkHttpHandler(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("onFailure", "createMessage error --> " + e);
+            }
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
+                JsonObject jsonRes = new Gson().fromJson(resReader, JsonObject.class);
+                if (jsonRes.get("status").getAsString().equals("ok"))
+                    syncResult.setResult(jsonRes.get("data").getAsInt());
+                else
+                    syncResult.setResult(null);
+            }
+        });
+        HashMap<String, String> params = new HashMap<>();
+        params.put("message", new Gson().toJson(created));
+        handler.postForm(URI_INSERT_MESSAGE, params);
+        return (int) syncResult.getResult();
+    }
 
 
     // MANAGE USER
@@ -337,7 +463,7 @@ public class RestApi {
         params.put("user", json);
 
         // execute
-        handler.postForm(API_URL_FIND_USER, params);
+        handler.postForm(URI_FIND_USER, params);
 
         return (User) syncResult.getResult();
 
@@ -389,10 +515,9 @@ public class RestApi {
         params.put("user", new Gson().toJson(created));
 
         // execute
-        handler.postForm(API_URL_INSERT_USER, params);
+        handler.postForm(URI_INSERT_USER, params);
 
         return (int) syncResult.getResult();
     }
-
 
 }

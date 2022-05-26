@@ -1,13 +1,11 @@
 package com.tibelian.gangaphone.database.model;
 
-import java.util.Date;
+import java.util.ArrayList;
 
 public class Chat {
 
     private User user;
-    private String lastMessage;
-    private Date lastDate;
-    private boolean isRead;
+    private ArrayList<Message> messages = new ArrayList<>();
 
     public User getUser() {
         return user;
@@ -17,28 +15,11 @@ public class Chat {
         this.user = user;
     }
 
-    public String getLastMessage() {
-        return lastMessage;
+    public ArrayList<Message> getMessages() {
+        return messages;
     }
 
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
+    public void setMessages(ArrayList<Message> messages) {
+        this.messages = messages;
     }
-
-    public Date getLastDate() {
-        return lastDate;
-    }
-
-    public void setLastDate(Date lastDate) {
-        this.lastDate = lastDate;
-    }
-
-    public boolean isRead() {
-        return isRead;
-    }
-
-    public void setRead(boolean read) {
-        isRead = read;
-    }
-
 }

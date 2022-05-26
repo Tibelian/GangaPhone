@@ -26,19 +26,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.tibelian.gangaphone.R;
+import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class MessageFragment extends Fragment {
 
-    private static final String ARG_USERNAME = "user_id";
-    private User mUser;
+    private static final String ARG_USER_ID = "user_id";
+    private int userId;
+    private User mTarget;
+    private boolean isNewTarget = false;
 
     private TextView mUsername;
     private TextView mStatus;
@@ -47,9 +51,9 @@ public class MessageFragment extends Fragment {
     private EditText mInputEditText;
     private Button mSendButton;
 
-    public static MessageFragment newInstance(String username) {
+    public static MessageFragment newInstance(int uid) {
         Bundle args = new Bundle();
-        args.putString(ARG_USERNAME, username);
+        args.putInt(ARG_USER_ID, uid);
         MessageFragment fragment = new MessageFragment();
         fragment.setArguments(args);
         return fragment;
@@ -59,11 +63,20 @@ public class MessageFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String username = getArguments().getString(ARG_USERNAME, "");
+        userId = getArguments().getInt(ARG_USER_ID, 0);
+
         try {
-            mUser = new RestApi().findUserByUsername(username);
-        } catch (IOException e) {
-            Log.e("MessageFragment", "error --> " + e);
+            mTarget = Session.get().getUser().getChatFrom(userId).getUser();
+        } catch(NullPointerException ne) {
+
+            // if user is not found on the previous chats
+            // then obtain him from the database
+            try {
+                mTarget = new RestApi().findUserById(userId);
+                isNewTarget = true;
+            } catch (IOException e) {
+                Log.e("MessageFragment", "onCreate error RestApi --> " + e);
+            }
         }
 
     }
@@ -94,19 +107,34 @@ public class MessageFragment extends Fragment {
         });
 
         // show username and status
-        mUsername.setText(mUser.getUsername());
-        mStatus.setText(mUser.isOnline() ? R.string.online : R.string.offline);
+        mUsername.setText(mTarget.getUsername());
+        mStatus.setText(mTarget.isOnline() ? R.string.online : R.string.offline);
 
-        // load messages from database
-        loadMessages();
+        // load messages
+        loadMessages(false);
 
         return view;
     }
 
-    public void loadMessages() {
-        // obtain msg
-        List<Message> posts = new DatabaseManager().getMessages(mUser);
-        mMessagesAdapter.setMessages(posts);
+    public void loadMessages(boolean fromDatabase) {
+        try {
+            // get messages from database if necessary
+            if (fromDatabase)
+                Session.get().getUser().getChatFrom(
+                        mTarget.getId()).setMessages(
+                                new RestApi().findMessages(mTarget.getId()));
+
+            // update adapter using user's session only if its not a new conversation
+            if (isNewTarget == false)
+                mMessagesAdapter.setMessages(
+                        Session.get().getUser().getChatFrom(mTarget.getId()).getMessages());
+
+            // refresh adapter
+            mMessagesAdapter.notifyDataSetChanged();
+
+        } catch (IOException e) {
+            Log.e("loadMessages", "error --> " + e);
+        }
     }
 
     private void sendMessage() {
@@ -121,15 +149,28 @@ public class MessageFragment extends Fragment {
         Message newMsg = new Message();
         newMsg.setDate(new Date());
         newMsg.setContent(content);
-        //newMsg.setFrom(); @todo current user session
-        newMsg.setTo(mUser);
 
-        boolean ok = new DatabaseManager().sendMessage(newMsg);
-        if (ok) {
+        // the API needs only user's id
+        User from = new User();
+        from.setId(Session.get().getUser().getId());
+        newMsg.setFrom(from);
+
+        newMsg.setTo(mTarget);
+
+        int mId = -1;
+        try {
+            mId = new RestApi().createMessage(newMsg);
+        } catch (IOException io) {
+            Log.e("MessageFragment", "createMessage error --> " + io);
+        }
+
+        if (mId != -1) {
             // clear input text
             mInputEditText.setText("");
-            // reload messages from database
-            loadMessages();
+            newMsg.setId(mId);
+            Session.get().getUser()
+                    .getChatFrom(mTarget.getId()).getMessages().add(newMsg);
+            loadMessages(false);
             // hide keyboard
             mInputEditText.onEditorAction(EditorInfo.IME_ACTION_DONE);
         } else {
@@ -140,9 +181,11 @@ public class MessageFragment extends Fragment {
 
     private class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.ViewHolder> {
 
-        private List<Message> mMessasges;
+        private List<Message> mMessasges = new ArrayList<>();
         public void setMessages(List<Message> posts) {
-            mMessasges = posts;
+            mMessasges.clear();
+            for (Message m:posts)
+                mMessasges.add(m);
         }
 
         @NonNull
@@ -190,18 +233,17 @@ public class MessageFragment extends Fragment {
                 mDate.setText(timeAgo);
                 mContent.setText(msg.getContent());
 
-                if (msg.getFrom().getUsername().equals(mUser.getUsername())) {
+                if (msg.getFrom().getId() == mTarget.getId()) {
                     // sent msg
+                }
+                else {
+                    // received msg
                     mIsRead.setVisibility(msg.isRead() ? View.VISIBLE : View.INVISIBLE);
                     mContainer.setCardBackgroundColor(Color.BLACK);
                     ViewGroup.LayoutParams layoutParams = mContainer.getLayoutParams();
                     LinearLayout.LayoutParams castLayoutParams = (LinearLayout.LayoutParams) layoutParams;
                     castLayoutParams.gravity = Gravity.END;
                     mDate.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-                }
-                else {
-                    // received msg
-
                 }
             }
 
