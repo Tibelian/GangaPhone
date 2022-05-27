@@ -2,8 +2,6 @@ package com.tibelian.gangaphone.product;
 
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,8 +11,6 @@ import androidx.fragment.app.FragmentResultListener;
 
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
-import com.tibelian.gangaphone.database.CurrentFilter;
-import com.tibelian.gangaphone.database.DatabaseManager;
 
 public class ListProductActivity extends AppCompatActivity {
 

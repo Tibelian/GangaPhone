@@ -22,9 +22,9 @@ import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.api.JsonMapper;
 import com.tibelian.gangaphone.api.RestApi;
-import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Chat;
 import com.tibelian.gangaphone.database.model.Message;
+import com.tibelian.gangaphone.socket.SocketClient;
 import com.tibelian.gangaphone.user.profile.ProductListActivity;
 
 import java.io.IOException;
@@ -33,8 +33,10 @@ import java.util.List;
 
 public class ChatListActivity extends AppCompatActivity {
 
-    private RecyclerView mPostsRecyclerView;
-    private PostListAdapter mPostAdapter;
+    private static boolean active = false;
+
+    private static RecyclerView mPostsRecyclerView;
+    private static PostListAdapter mPostAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,11 +53,21 @@ public class ChatListActivity extends AppCompatActivity {
 
         // load messages
         loadChats(false);
+        checkWhoIsOnline();
     }
 
+    public static void checkWhoIsOnline() {
+        String users = "";
+        ArrayList<Chat> usersChat = Session.get().getUser().getChats();
+        for (int i = 0; i < usersChat.size(); i++) {
+            if (i > 0) users += ",";
+            users += ""+usersChat.get(i);
+        }
+        SocketClient.get().send(
+                "{\"operation\":\"is_online\",\"users\":["+users+"]}");
+    }
 
-    public void loadChats(boolean fromDatabase) {
-        Log.d("ChatListActivity", "executing loadChats");
+    public static void loadChats(boolean fromDatabase) {
         try {
             if (fromDatabase)
                 Session.get().getUser().setChats(JsonMapper.mapChats(
@@ -64,11 +76,9 @@ public class ChatListActivity extends AppCompatActivity {
                 ));
             mPostAdapter.setPosts(Session.get().getUser().getChats());
             mPostAdapter.notifyDataSetChanged();
-            Log.d("ChatListActivity", "notified adapter loadChats");
         } catch (IOException io) {
             Log.e("ChatListActivity", "loadChats error --> " + io);
         }
-        Log.d("ChatListActivity", "finished loadChats");
     }
 
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
@@ -163,6 +173,23 @@ public class ChatListActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        active = true;
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        active = false;
+    }
+    public static boolean isActive() {
+        return active;
     }
 
 }

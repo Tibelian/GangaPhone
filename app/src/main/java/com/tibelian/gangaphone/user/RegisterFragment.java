@@ -19,7 +19,6 @@ import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.api.RestApi;
-import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.User;
 import com.tibelian.gangaphone.product.ListProductActivity;
 

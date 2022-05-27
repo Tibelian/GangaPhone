@@ -15,12 +15,10 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.api.RestApi;
-import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Product;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ProductPagerActivity extends AppCompatActivity {
 

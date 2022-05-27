@@ -1,6 +1,7 @@
 package com.tibelian.gangaphone;
 
 import com.tibelian.gangaphone.database.model.User;
+import com.tibelian.gangaphone.socket.MessengerManager;
 
 public class Session {
 
@@ -8,8 +9,14 @@ public class Session {
     private User user;
     private boolean isLoggedIn = false;
 
+    private MessengerManager messenger;
+
+
     private Session() {
         user = new User();
+        // run thread
+        messenger = new MessengerManager();
+        messenger.start();
     }
 
     public static Session get() {

@@ -3,7 +3,6 @@ package com.tibelian.gangaphone.messenger;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateUtils;
-import android.text.style.AlignmentSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,9 +26,9 @@ import com.google.android.material.card.MaterialCardView;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.api.RestApi;
-import com.tibelian.gangaphone.database.DatabaseManager;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.User;
+import com.tibelian.gangaphone.socket.SocketClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -171,6 +169,11 @@ public class MessageFragment extends Fragment {
             Session.get().getUser()
                     .getChatFrom(mTarget.getId()).getMessages().add(newMsg);
             loadMessages(false);
+
+            // notify the socket server
+            SocketClient.get().send(
+                    "{\"operation\":\"new_message\", \"target_id\":"+mTarget.getId()+"}");
+
             // hide keyboard
             mInputEditText.onEditorAction(EditorInfo.IME_ACTION_DONE);
         } else {

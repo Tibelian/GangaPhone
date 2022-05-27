@@ -13,6 +13,9 @@ import com.tibelian.gangaphone.R;
 
 public class ChatActivity extends AppCompatActivity {
 
+    private static boolean active = false;
+    private static MessageFragment fragment = null;
+
     private static final String EXTRA_USER_ID = "current_user_id";
     private int uid;
 
@@ -38,14 +41,37 @@ public class ChatActivity extends AppCompatActivity {
 
     private void initMessagesFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
-
+        fragment = (MessageFragment) fragmentManager.findFragmentById(R.id.fragment_container);
         if(fragment == null){
             fragment = MessageFragment.newInstance(uid);
             fragmentManager.beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
+    }
+
+
+
+
+
+
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        active = true;
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        active = false;
+    }
+    public static boolean isActive() {
+        return active;
+    }
+    public static void update() {
+        fragment.loadMessages(false);
     }
 
 }
