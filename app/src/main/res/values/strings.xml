@@ -25,4 +25,10 @@
     <string name="edit_pSave">Save</string>
     <string name="error_newProduct">ERROR NEW PRODUCT</string>
     <string name="edit_pNoImages">There are no images uploaded</string>
+    <string name="req_pName">Name must have more than 5 characters</string>
+    <string name="req_pPriceFormat">Price must be a valid number</string>
+    <string name="req_pDesc">Description must have more than 10 characters</string>
+    <string name="req_pStatus">Please select product\'s status</string>
+    <string name="req_pPictures">Please upload at least one picture</string>
+    <string name="error_pRemove">Couldn\'t delete the product</string>
 </resources>

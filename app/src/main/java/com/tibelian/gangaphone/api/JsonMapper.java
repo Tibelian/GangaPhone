@@ -114,7 +114,7 @@ public class JsonMapper {
                 JsonArray jm = data.get("messages").getAsJsonArray();
                 for(JsonElement m:jm)
                     mList.add(mapMessage(m.getAsJsonObject()));
-                u.setChats(mapChats(mList));
+                u.setChats(mapChats(mList, u));
             }
         }
         return u;
@@ -134,7 +134,7 @@ public class JsonMapper {
         return pp;
     }
 
-    public static ArrayList<Chat> mapChats(ArrayList<Message> messages) {
+    public static ArrayList<Chat> mapChats(ArrayList<Message> messages, User currentUser) {
         ArrayList<Chat> chats = new ArrayList<>();
         for(Message msg:messages)
         {
@@ -161,7 +161,7 @@ public class JsonMapper {
                 newChat.getMessages().add(msg);
                 // detect the target
                 // logged in user cant be the target
-                if (msg.getFrom().getId() == Session.get().getUser().getId())
+                if (msg.getFrom().getId() == currentUser.getId())
                     newChat.setUser(msg.getTo());
                 else
                     newChat.setUser(msg.getFrom());

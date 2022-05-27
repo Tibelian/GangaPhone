@@ -134,7 +134,17 @@ public class ProductEditFragment extends Fragment {
         mRemoveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isNew) new DatabaseManager().deleteProduct(mProduct);
+                if (!isNew) {
+                    try {
+                        boolean deleted = new RestApi().deleteProduct(mProduct.getId());
+                        if (deleted)
+                            Session.get().getUser().getProducts().remove(mProduct);
+                        else
+                            Toast.makeText(getActivity(), R.string.error_pRemove, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        Log.e("ProductEditFragment", "mRemoveBtn.onClick error --> " + e);
+                    }
+                }
                 getActivity().finish();
             }
         });
@@ -201,19 +211,19 @@ public class ProductEditFragment extends Fragment {
         mStatusScratchedCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mProduct.setStatus("scratched");
+                if (b) mProduct.setStatus("scratched");
             }
         });
         mStatusNewCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mProduct.setStatus("new");
+                if (b) mProduct.setStatus("new");
             }
         });
         mStatusBrokenCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mProduct.setStatus("broken");
+                if (b) mProduct.setStatus("broken");
             }
         });
 
@@ -289,6 +299,8 @@ public class ProductEditFragment extends Fragment {
             // ALL GOOD - we have permission
             try {
 
+                if (!checkValidProduct()) return;
+
                 if (isNew) {
                     mProduct = new RestApi().createProduct(mProduct);
                     Session.get().getUser().getProducts().add(mProduct);
@@ -308,13 +320,57 @@ public class ProductEditFragment extends Fragment {
                 Log.e("ProductEditFragment", "mSaveBtn onclick --> " + io);
             }
             if (mProduct.getId() != 0)
-                startActivity(ProductPagerActivity.newIntent(getActivity(), mProduct.getId()));
+                startActivity(ProductPagerActivity.newIntent(getActivity(), mProduct.getId(), true));
             else
                 Toast.makeText(getActivity(), R.string.error_newProduct, Toast.LENGTH_LONG).show();
         } else {
             requestPermissionLauncher.launch(
                     Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
+    }
+
+    private boolean checkValidProduct() {
+        boolean ok = true;
+        int lastError = -1;
+
+        // check name
+        if (mProduct.getName() == null || mProduct.getName().length() < 5) {
+            ok = false; lastError = R.string.req_pName;
+        }
+
+        // check price
+        try {
+            if (mProduct.getPrice() < 0)
+                throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            ok = false; lastError = R.string.req_pPriceFormat;
+        }
+
+        // check description
+        if (mProduct.getDescription() == null || mProduct.getDescription().length() < 10) {
+            ok = false; lastError = R.string.req_pDesc;
+        }
+
+        // check status
+        if (mProduct.getStatus() == null || mProduct.getStatus().length() < 1) {
+            ok = false; lastError = R.string.req_pStatus;
+        }
+
+        // check pictures on new product
+        if (isNew && mProduct.getPictures().size() == 0) {
+            ok = false; lastError = R.string.req_pPictures;
+        }
+
+        // check pictures on editing product
+        if (!isNew && mProduct.getPictures().size() == picturesToDelete.size()) {
+            ok = false; lastError = R.string.req_pPictures;
+        }
+
+        // show last error
+        if (lastError != -1)
+            Toast.makeText(getActivity(), lastError, Toast.LENGTH_SHORT).show();
+
+        return ok;
     }
 
 

@@ -49,6 +49,7 @@ public class RestApi {
     public static final String URI_INSERT_PRODUCT         = API_URL + "/product/new";
     public static final String URI_UPDATE_PRODUCT         = API_URL + "/product/{id}";
     public static final String URI_UPDATE_PRODUCT_VISITS  = API_URL + "/product/{id}/visits";
+    public static final String URI_DELETE_PRODUCT         = API_URL + "/product/delete/{id}";
     public static final String URI_INSERT_USER            = API_URL + "/user/new";
     public static final String URI_FIND_USER              = API_URL + "/user/find";
     public static final String URI_FIND_ALL_MESSAGES      = API_URL + "/message/all/{userId}";
@@ -299,6 +300,26 @@ public class RestApi {
 
         // the product updated is returned
         return (Product) syncResult.getResult();
+    }
+
+    public boolean deleteProduct(int productId) throws IOException {
+        SyncResult syncResult = new SyncResult();
+        OkHttpHandler handler = new OkHttpHandler(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("onFailure", "searchProducts error --> " + e);
+            }
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
+                JsonObject jsonRes = new Gson().fromJson(resReader, JsonObject.class);
+                syncResult.setResult(
+                        jsonRes.get("status").getAsString().equals("ok"));
+            }
+        });
+        handler.postForm(
+                URI_DELETE_PRODUCT.replace("{id}", ""+productId), new HashMap<>());
+        return (boolean) syncResult.getResult();
     }
 
 

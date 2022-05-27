@@ -59,7 +59,8 @@ public class ChatListActivity extends AppCompatActivity {
         try {
             if (fromDatabase)
                 Session.get().getUser().setChats(JsonMapper.mapChats(
-                        new RestApi().findMessages(Session.get().getUser().getId())
+                        new RestApi().findMessages(Session.get().getUser().getId()),
+                        Session.get().getUser()
                 ));
             mPostAdapter.setPosts(Session.get().getUser().getChats());
             mPostAdapter.notifyDataSetChanged();
