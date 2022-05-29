@@ -89,14 +89,12 @@ public class RegisterFragment extends Fragment {
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Login", "Check credentials");
                 ((MainActivity) getActivity()).replaceFragment(new LoginFragment());
             }
         });
         mGuestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Login", "Go guest");
                 startActivity(new Intent(getContext(), ListProductActivity.class));
             }
         });

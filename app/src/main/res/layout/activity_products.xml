@@ -14,7 +14,7 @@
             android:id="@+id/btnShowFilterDialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Apply new filter"/>
+            android:text="@string/apply_new_filter"/>
     <!--
         <TextView
             android:layout_width="match_parent"

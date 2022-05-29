@@ -11,7 +11,10 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -90,6 +93,7 @@ public class ProductEditFragment extends Fragment {
         if (isNew) {
             mProduct = new Product();
             mProduct.setOwner(Session.get().getUser());
+            getActivity().getActionBar().setSubtitle(R.string.edit_p_new);
         }
         else {
             ArrayList<Product> sesProd = Session.get().getUser().getProducts();

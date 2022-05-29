@@ -7,32 +7,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- page's title -->
-    <TextView
-        android:id="@+id/edit_pTitle"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16dp"
-        android:textColor="@color/dark"
-        android:text="@string/edit_p_new"/>
-    <LinearLayout
-        android:id="@+id/edit_pLine"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="3dp"
-        android:background="@color/dark"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/edit_pTitle"
-        tools:layout_editor_absoluteX="10dp" />
-
     <!-- name and price -->
     <LinearLayout
         android:id="@+id/edit_pNamePiceConainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/edit_pLine"
+        app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="10dp">
         <LinearLayout
             android:layout_width="0dp"
@@ -126,21 +107,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="New"
+                android:text="@string/status_new"
                 android:textSize="13dp" />
             <RadioButton
                 android:id="@+id/edit_pStatusScratched"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Scratched"
+                android:text="@string/status_scratched"
                 android:textSize="13dp" />
             <RadioButton
                 android:id="@+id/edit_pStatusBroken"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Broken"
+                android:text="@string/status_broken"
                 android:textSize="13dp" />
         </RadioGroup>
     </LinearLayout>

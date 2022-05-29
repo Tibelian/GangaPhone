@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="40dp">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="30dp"
+        android:src="@drawable/logo"/>
+    <!--
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -13,7 +21,8 @@
         android:textSize="26dp"
         android:layout_marginBottom="20dp"
         android:textColor="@color/black"
-        android:text="GangaPhone" />
+        android:text="@string/app_name" />
+    -->
 
     <LinearLayout
         android:orientation="vertical"
@@ -23,7 +32,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create new account"
+            android:text="@string/create_account"
             android:layout_marginBottom="10dp"
             android:textColor="@color/black"/>
 
@@ -36,7 +45,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
-                android:text="Username:" />
+                android:text="@string/username" />
             <EditText
                 android:id="@+id/user_register_username"
                 android:inputType="text"
@@ -53,7 +62,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
-                android:text="Password:" />
+                android:text="@string/password" />
             <EditText
                 android:id="@+id/user_register_password"
                 android:inputType="textPassword"
@@ -70,7 +79,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
-                android:text="Confirm password:" />
+                android:text="@string/password_rep" />
             <EditText
                 android:id="@+id/user_register_password2"
                 android:inputType="textPassword"
@@ -87,7 +96,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
-                android:text="Email address:" />
+                android:text="@string/email" />
             <EditText
                 android:id="@+id/user_register_email"
                 android:inputType="textEmailAddress"
@@ -104,7 +113,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
-                android:text="Phone number:" />
+                android:text="@string/phone" />
             <EditText
                 android:id="@+id/user_register_phone"
                 android:inputType="phone"
@@ -121,18 +130,30 @@
             android:layout_height="wrap_content">
             <Button
                 android:id="@+id/user_register_confirm"
+                android:minHeight="20dp"
+                android:paddingVertical="5dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:text="Register" />
+                android:background="@drawable/btn_dark"
+                android:elevation="3dp"
+                android:clipToPadding="false"
+                android:textColor="@color/white"
+                android:text="@string/register" />
             <TextView
                 android:id="@+id/user_register_go_login"
+                android:background="@drawable/btn_secondary"
+                android:elevation="3dp"
+                android:clipToPadding="false"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                android:paddingVertical="5dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
-                android:text="I already have an account, login" />
+                android:text="@string/signIn" />
         </LinearLayout>
 
     </LinearLayout>
@@ -141,8 +162,14 @@
         android:id="@+id/user_register_go_guest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
-        android:textColor="@color/black"
-        android:text="Continue as guest" />
+        android:textSize="18dp"
+        android:background="@drawable/btn_teal"
+        android:elevation="3dp"
+        android:clipToPadding="false"
+        android:paddingVertical="5dp"
+        android:paddingHorizontal="15dp"
+        android:layout_margin="5dp"
+        android:textColor="@color/white"
+        android:text="@string/continue_as_guest" />
 
 </LinearLayout>

@@ -9,7 +9,7 @@
         android:textSize="13dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Keyword:" />
+        android:text="@string/filter_keyword" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
             android:id="@+id/filterKeyword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Example: iPhone X 128GB" />
+            android:hint="@string/filter_exKeyword" />
     </LinearLayout>
 
     <TextView
@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:background="#eee"
             android:layout_marginRight="4dp"
-            android:text="New" />
+            android:text="@string/status_new" />
         <CheckBox
             android:textSize="13dp"
             android:id="@+id/filterStatusScratched"
@@ -52,7 +52,7 @@
             android:layout_weight="1"
             android:background="#eee"
             android:layout_marginRight="4dp"
-            android:text="Scratched" />
+            android:text="@string/status_scratched" />
         <CheckBox
             android:textSize="13dp"
             android:id="@+id/filterStatusBroken"
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#eee"
-            android:text="Broken" />
+            android:text="@string/status_broken" />
     </LinearLayout>
 
     <TextView
@@ -68,7 +68,7 @@
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Location:" />
+        android:text="@string/filter_location" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             android:id="@+id/filterLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Example: London"  />
+            android:hint="@string/filter_exLocation"  />
     </LinearLayout>
 
     <TextView
@@ -88,7 +88,7 @@
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Price:" />
+        android:text="@string/filter_price" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginRight="4dp"
-            android:hint="min"/>
+            android:hint="@string/filter_minPrice"/>
         <EditText
             android:textSize="13dp"
             android:inputType="numberDecimal"
@@ -110,7 +110,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="max"/>
+            android:hint="@string/filter_maxPrice"/>
     </LinearLayout>
 
     <TextView
@@ -118,7 +118,7 @@
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Order by:" />
+        android:text="@string/filter_orderBy" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -132,31 +132,31 @@
                 android:id="@+id/filterOrderPriceAsc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Lowest price"/>
+                android:text="@string/filter_orderLowestPrice"/>
             <RadioButton
                 android:textSize="13dp"
                 android:id="@+id/filterOrderPriceDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Highest price"/>
+                android:text="@string/filter_orderHighestPrice"/>
             <RadioButton
                 android:textSize="13dp"
                 android:id="@+id/filterOrderDateDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Newest posts"/>
+                android:text="@string/filter_orderNewestPosts"/>
             <RadioButton
                 android:textSize="13dp"
                 android:id="@+id/filterOrderDateAsc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Oldest posts"/>
+                android:text="@string/filter_orderOldestPosts"/>
             <RadioButton
                 android:textSize="13dp"
                 android:id="@+id/filterOrderFeatured"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Featured"/>
+                android:text="@string/filter_orderFeatured"/>
         </RadioGroup>
     </LinearLayout>
 

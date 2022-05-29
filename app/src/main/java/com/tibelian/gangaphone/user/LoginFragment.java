@@ -46,7 +46,6 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                Log.e("onclick sigin", "STARTED LOGIN");
                 User loggedIn = null;
                 try {
                     loggedIn = new RestApi().findUserByLogin(
@@ -54,7 +53,6 @@ public class LoginFragment extends Fragment {
                 } catch (IOException e) {
                     Log.e("LoginFragment", "error -> " + e);
                 }
-                Log.e("onclick sigin", "ENDED LOGIN");
 
                 if (loggedIn != null && loggedIn.getId() != 0) {
                     Session.get().setUser(loggedIn);
@@ -70,14 +68,12 @@ public class LoginFragment extends Fragment {
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Login", "Open register form");
                 ((MainActivity) getActivity()).replaceFragment(new RegisterFragment());
             }
         });
         mGuestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Login", "Go guest");
                 startActivity(new Intent(getContext(), ListProductActivity.class));
             }
         });

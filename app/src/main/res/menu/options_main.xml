@@ -5,10 +5,12 @@
     <item
         android:id="@+id/menu_msg"
         android:title="@string/menu_msg"
+        android:icon="@drawable/chat"
         app:showAsAction="ifRoom|withText"/>
     <item
         android:id="@+id/menu_user"
         android:title="@string/menu_user"
-        app:showAsAction="ifRoom"/>
+        android:icon="@drawable/user"
+        app:showAsAction="ifRoom|withText"/>
 
 </menu>

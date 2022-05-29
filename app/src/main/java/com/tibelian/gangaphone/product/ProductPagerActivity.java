@@ -57,7 +57,7 @@ public class ProductPagerActivity extends AppCompatActivity {
             try {
                 mProducts = new RestApi().searchProducts(true);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("ProductPagerActivity", "error --> " + e);
             }
         }
 
@@ -67,11 +67,26 @@ public class ProductPagerActivity extends AppCompatActivity {
         // show the selected product
         for(int i = 0; i < mProducts.size(); i++){
             if (mProducts.get(i).getId() == productId) {
-                mViewPager.setCurrentItem(i); break;
+                mViewPager.setCurrentItem(i);
+                updateSubtitleCounter();
+                break;
             }
         }
-
     }
+
+    private void updateSubtitleCounter() {
+        try {
+            String subtitle = getString(R.string.product_details);
+            subtitle += " - " + (mViewPager.getCurrentItem() + 1);
+            subtitle += "/" + mViewPager.getAdapter().getItemCount();
+
+            getSupportActionBar().setSubtitle(subtitle);
+        } catch (NullPointerException e) {
+            Log.e("ProductPagerActivity", "updateSubtitleCounter error --> " + e);
+        }
+    }
+
+
 
     private void initViewPager() {
         mViewPager = findViewById(R.id.activityProductViewPager);
@@ -86,6 +101,13 @@ public class ProductPagerActivity extends AppCompatActivity {
             @Override
             public int getItemCount() {
                 return mProducts.size();
+            }
+        });
+        mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                updateSubtitleCounter();
             }
         });
     }

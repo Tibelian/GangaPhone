@@ -1,6 +1,8 @@
 package com.tibelian.gangaphone.product;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,8 +38,10 @@ public class ProductDetailsFragment extends Fragment {
     private TextView mPrice;
     private TextView mDescription;
     private TextView mPhone;
+    private TextView mEmail;
     private TextView mStatus;
     private Button mContactSeller;
+    private Button mShare;
 
     private int currentImg = 0;
     private TextView mPrevImg;
@@ -79,6 +83,8 @@ public class ProductDetailsFragment extends Fragment {
         mPrevImg = view.findViewById(R.id.productDetails_PrevImg);
         mNextImg = view.findViewById(R.id.productDetails_NextImg);
         mContactSeller = view.findViewById(R.id.productDetails_ContactSeller);
+        mEmail = view.findViewById(R.id.productDetails_Email);
+        mShare = view.findViewById(R.id.productDetails_Share);
 
         if (mProduct.getPictures().size() > 0)
             updateCurrentPicture();
@@ -89,6 +95,7 @@ public class ProductDetailsFragment extends Fragment {
         mDescription.setText(mProduct.getDescription());
         mStatus.setText(mProduct.getStatus());
         mPhone.setText(mProduct.getOwner().getPhone());
+        mEmail.setText(mProduct.getOwner().getEmail());
 
         mPrevImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,9 +128,63 @@ public class ProductDetailsFragment extends Fragment {
             }
         });
 
+        mPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + mProduct.getOwner().getPhone()));
+                startActivity(intent);
+            }
+        });
+
+        mEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:" + mProduct.getOwner().getEmail()));
+                intent.putExtra(Intent.EXTRA_SUBJECT, mProduct.getName());
+                startActivity(intent);
+            }
+        });
+
+        mShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, getReport());
+                intent = Intent.createChooser(intent, getString(R.string.send_report));
+                startActivity(intent);
+            }
+        });
+
+        // the logged in user cant contact himself
+        if (mProduct.getOwner().getId() == Session.get().getUser().getId())
+            mContactSeller.setVisibility(View.INVISIBLE);
+
         return view;
     }
 
+    private String getReport() {
+        String status = "unknown";
+        switch(mProduct.getStatus()) {
+            case "broken":     status = getString(R.string.status_broken);     break;
+            case "new":        status = getString(R.string.status_new);        break;
+            case "scratched":  status = getString(R.string.status_scratched);  break;
+        }
+        String content = "";
+        content += getString(R.string.report_intro) + "\n";
+        content += getString(R.string.productName) + ": " + mProduct.getName() + "\n";
+        content += getString(R.string.price) + ": " + mProduct.getPrice() + "\n";
+        content += getString(R.string.location) + ": " + mProduct.getOwner().getLocation() + "\n";
+        content += getString(R.string.status) + ": " + status + "\n";
+        content += getString(R.string.phone) + ": " + mProduct.getOwner().getPhone() + "\n";
+        content += getString(R.string.email) + ": " + mProduct.getOwner().getEmail() + "\n";
+        content += getString(R.string.publishedDate) + ": " + mProduct.getDate() + "\n";
+        content += getString(R.string.description) + ": " + mProduct.getDescription() + "\n";
+        content += getString(R.string.report_end);
+        return content;
+    }
 
     private void updateCurrentPicture() {
         mPicture.setImageResource(R.drawable.loading_image);

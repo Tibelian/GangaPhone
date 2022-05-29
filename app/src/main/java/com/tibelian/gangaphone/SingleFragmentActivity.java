@@ -6,6 +6,7 @@ import androidx.annotation.LayoutRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
 
@@ -38,6 +39,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     public void replaceFragment(Fragment newFragment) {
         getSupportFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .replace(R.id.fragment_container, newFragment)
                 .commit();
     }

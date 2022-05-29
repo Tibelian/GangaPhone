@@ -60,6 +60,8 @@ public class ProductListActivity extends AppCompatActivity {
             }
         });
 
+        getSupportActionBar().setSubtitle(R.string.app_slogan);
+
     }
 
 
@@ -137,6 +139,7 @@ public class ProductListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_main, menu);
         menu.findItem(R.id.menu_user).setTitle(R.string.menu_logout);
+        menu.findItem(R.id.menu_user).setIcon(R.drawable.logout);
         return true;
     }
     @Override

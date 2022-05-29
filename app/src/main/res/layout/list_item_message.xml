@@ -32,7 +32,7 @@
                 android:textColor="@color/white"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="current message"/>
+                android:hint="{current message}"/>
             <CheckBox
                 android:id="@+id/msgIsRead"
                 android:layout_width="25dp"

@@ -44,6 +44,9 @@ public class ListProductActivity extends AppCompatActivity {
         });
 
         initProductsFragment();
+
+        getSupportActionBar().setSubtitle(R.string.app_slogan);
+
     }
 
     private void initProductsFragment() {

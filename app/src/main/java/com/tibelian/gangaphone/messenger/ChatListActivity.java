@@ -54,6 +54,8 @@ public class ChatListActivity extends AppCompatActivity {
         // load messages
         loadChats(false);
         checkWhoIsOnline();
+
+        getSupportActionBar().setSubtitle(R.string.messenger_subtitle);
     }
 
     public static void checkWhoIsOnline() {

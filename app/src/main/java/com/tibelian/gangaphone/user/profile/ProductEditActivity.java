@@ -29,6 +29,11 @@ public class ProductEditActivity extends AppCompatActivity {
 
         int productId = getIntent().getIntExtra(EXTRA_PRODUCT_ID, 0);
 
+        if (productId == 0)
+            getSupportActionBar().setSubtitle(R.string.edit_pTitle);
+        else
+            getSupportActionBar().setSubtitle(R.string.edit_p_new);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
 

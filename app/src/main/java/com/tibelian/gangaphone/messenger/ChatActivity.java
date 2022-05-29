@@ -37,6 +37,8 @@ public class ChatActivity extends AppCompatActivity {
         // load messages
         initMessagesFragment();
 
+        getSupportActionBar().setSubtitle(R.string.chatting);
+
     }
 
     private void initMessagesFragment() {
