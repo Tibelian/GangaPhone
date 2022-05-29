@@ -3,9 +3,37 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_product_details.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/btn_dark.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/btn_secondary.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/btn_teal.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_dark_drawable.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_dark_rounded.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_dark_rounded_reverse.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_drawable.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_light_rounded.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_light_rounded_reverse.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_teal_drawable.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_teal_rounded.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_teal_rounded_darker.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_teal_rounded_reverse.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/activity_main.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/activity_messenger.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/activity_products.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/activity_profile_products.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_filter.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_form_login.xml" value="0.33" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_form_register.xml" value="0.33" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_list_messages.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_list_products.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_product_details.xml" value="0.33" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_product_edit.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/fragment_product_images.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/list_item_chat.xml" value="0.17831813576494426" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/list_item_image.xml" value="0.33" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/list_item_message.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/list_item_product.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/list_item_profile_product.xml" value="0.17831813576494426" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/menu/options_main.xml" value="0.32407407407407407" />
       </map>
     </option>
   </component>
