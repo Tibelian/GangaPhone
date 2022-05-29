@@ -1,11 +1,8 @@
-package com.tibelian.gangaphone.api;
-
-import android.util.Log;
+package com.tibelian.gangaphone.utils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.database.model.Chat;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.Product;
@@ -15,7 +12,6 @@ import com.tibelian.gangaphone.database.model.User;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 

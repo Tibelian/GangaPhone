@@ -28,7 +28,7 @@ import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.User;
-import com.tibelian.gangaphone.socket.SocketClient;
+import com.tibelian.gangaphone.messenger.socket.SocketClient;
 
 import java.io.IOException;
 import java.util.ArrayList;

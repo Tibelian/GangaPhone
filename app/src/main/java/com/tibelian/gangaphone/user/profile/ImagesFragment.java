@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tibelian.gangaphone.R;
-import com.tibelian.gangaphone.async.ImageLoadTask;
+import com.tibelian.gangaphone.api.ImageLoadTask;
 import com.tibelian.gangaphone.database.model.ProductPicture;
 
 import java.util.ArrayList;

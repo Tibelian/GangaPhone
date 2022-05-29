@@ -1,4 +1,4 @@
-package com.tibelian.gangaphone.async;
+package com.tibelian.gangaphone.api;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

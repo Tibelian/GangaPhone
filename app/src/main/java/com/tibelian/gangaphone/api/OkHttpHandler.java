@@ -2,6 +2,8 @@ package com.tibelian.gangaphone.api;
 
 import static com.tibelian.gangaphone.api.RestApi.API_AUTH;
 
+import com.tibelian.gangaphone.utils.FileHandler;
+
 import java.io.IOException;
 import java.net.URLConnection;
 import java.util.HashMap;

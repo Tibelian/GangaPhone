@@ -1,7 +1,5 @@
 package com.tibelian.gangaphone.api;
 
-import android.util.Log;
-
 public class SyncResult {
 
     private static final long TIMEOUT = 20000L;

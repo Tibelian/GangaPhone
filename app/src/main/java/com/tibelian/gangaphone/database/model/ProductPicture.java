@@ -1,9 +1,6 @@
 package com.tibelian.gangaphone.database.model;
 
-import android.graphics.Bitmap;
 import android.net.Uri;
-
-import com.tibelian.gangaphone.async.ImageLoadTask;
 
 public class ProductPicture {
 

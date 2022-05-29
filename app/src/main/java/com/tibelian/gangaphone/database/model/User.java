@@ -2,8 +2,7 @@ package com.tibelian.gangaphone.database.model;
 
 import android.util.Log;
 
-import com.tibelian.gangaphone.messenger.ChatListActivity;
-import com.tibelian.gangaphone.socket.MessengerManager;
+import com.tibelian.gangaphone.messenger.socket.MessengerManager;
 
 import java.util.ArrayList;
 

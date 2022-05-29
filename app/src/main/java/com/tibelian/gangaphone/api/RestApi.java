@@ -4,40 +4,27 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.primitives.Bytes;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tibelian.gangaphone.database.CurrentFilter;
-import com.tibelian.gangaphone.database.model.Chat;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.database.model.ProductPicture;
 import com.tibelian.gangaphone.database.model.User;
+import com.tibelian.gangaphone.utils.FileHandler;
+import com.tibelian.gangaphone.utils.JsonMapper;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import okhttp3.internal.http2.Hpack;
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.ByteString;
-import okio.Source;
 
 public class RestApi {
 

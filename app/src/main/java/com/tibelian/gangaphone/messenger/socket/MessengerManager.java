@@ -1,13 +1,9 @@
-package com.tibelian.gangaphone.socket;
+package com.tibelian.gangaphone.messenger.socket;
 
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.tibelian.gangaphone.Session;
-import com.tibelian.gangaphone.api.JsonMapper;
+import com.tibelian.gangaphone.utils.JsonMapper;
 import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.model.Chat;
 import com.tibelian.gangaphone.messenger.ChatActivity;

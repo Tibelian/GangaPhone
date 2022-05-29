@@ -23,7 +23,7 @@ import com.tibelian.gangaphone.MainActivity;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.api.RestApi;
-import com.tibelian.gangaphone.async.ImageLoadTask;
+import com.tibelian.gangaphone.api.ImageLoadTask;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.messenger.ChatListActivity;
 import com.tibelian.gangaphone.user.profile.ProductListActivity;

@@ -20,11 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
-import com.tibelian.gangaphone.api.JsonMapper;
+import com.tibelian.gangaphone.utils.JsonMapper;
 import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.database.model.Chat;
 import com.tibelian.gangaphone.database.model.Message;
-import com.tibelian.gangaphone.socket.SocketClient;
+import com.tibelian.gangaphone.messenger.socket.SocketClient;
 import com.tibelian.gangaphone.user.profile.ProductListActivity;
 
 import java.io.IOException;

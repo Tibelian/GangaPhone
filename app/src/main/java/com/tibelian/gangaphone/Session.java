@@ -1,7 +1,7 @@
 package com.tibelian.gangaphone;
 
 import com.tibelian.gangaphone.database.model.User;
-import com.tibelian.gangaphone.socket.MessengerManager;
+import com.tibelian.gangaphone.messenger.socket.MessengerManager;
 
 public class Session {
 

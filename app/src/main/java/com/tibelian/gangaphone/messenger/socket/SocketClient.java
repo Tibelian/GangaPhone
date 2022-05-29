@@ -1,4 +1,4 @@
-package com.tibelian.gangaphone.socket;
+package com.tibelian.gangaphone.messenger.socket;
 
 import android.util.Log;
 
