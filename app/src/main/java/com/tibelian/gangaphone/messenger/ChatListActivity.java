@@ -57,14 +57,18 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     public static void checkWhoIsOnline() {
-        String users = "";
-        ArrayList<Chat> usersChat = Session.get().getUser().getChats();
-        for (int i = 0; i < usersChat.size(); i++) {
-            if (i > 0) users += ",";
-            users += ""+usersChat.get(i);
-        }
-        SocketClient.get().send(
-                "{\"operation\":\"is_online\",\"users\":["+users+"]}");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String ids = "";
+                ArrayList<Chat> chats = Session.get().getUser().getChats();
+                for (int i = 0; i < chats.size(); i++) {
+                    if (i > 0) ids += ",";
+                    ids += ""+chats.get(i).getUser().getId();
+                }
+                SocketClient.get().send("is_online\n"+ids);
+            }
+        }).start();
     }
 
     public static void loadChats(boolean fromDatabase) {

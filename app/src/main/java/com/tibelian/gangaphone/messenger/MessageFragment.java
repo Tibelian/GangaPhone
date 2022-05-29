@@ -130,6 +130,9 @@ public class MessageFragment extends Fragment {
             // refresh adapter
             mMessagesAdapter.notifyDataSetChanged();
 
+            // scroll to the last message
+            mMsgRecyclerView.smoothScrollToPosition(mMessagesAdapter.getItemCount() - 1);
+
         } catch (IOException e) {
             Log.e("loadMessages", "error --> " + e);
         }
@@ -171,8 +174,7 @@ public class MessageFragment extends Fragment {
             loadMessages(false);
 
             // notify the socket server
-            SocketClient.get().send(
-                    "{\"operation\":\"new_message\", \"target_id\":"+mTarget.getId()+"}");
+            notifyNewMessage(mTarget.getId());
 
             // hide keyboard
             mInputEditText.onEditorAction(EditorInfo.IME_ACTION_DONE);
@@ -180,6 +182,15 @@ public class MessageFragment extends Fragment {
             Toast.makeText(getContext(), "An unexpected error occurred", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void notifyNewMessage(int userId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SocketClient.get().send("new_message\n"+userId);
+            }
+        }).start();
     }
 
     private class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.ViewHolder> {

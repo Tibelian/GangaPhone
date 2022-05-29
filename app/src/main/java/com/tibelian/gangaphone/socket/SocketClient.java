@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,8 +12,8 @@ import java.net.Socket;
 
 public class SocketClient {
 
-    public static final String HOST = "127.0.0.1";
-    public static final int PORT = 10000;
+    public static final String HOST = "51.91.58.72";
+    public static final int PORT = 6000;
 
     private static SocketClient socketClient;
 
@@ -21,6 +22,7 @@ public class SocketClient {
     private Socket client;
     private InputStream input;
     private OutputStream output;
+    private boolean quit = false;
 
     public static SocketClient get() {
         if (socketClient == null)
@@ -51,6 +53,10 @@ public class SocketClient {
             Log.d("SocketClient", "** CLIENT RECEIVED A MESSAGE FROM THE SERVER **");
             return msgFromServer.readUTF();
         }
+        catch (EOFException eo) {
+            Log.e("SocketClient", "server is offline --> " + eo);
+            quit = true;
+        }
         catch (IOException e) {
             Log.e("SocketClient", "receive() error --> " + e);
         }
@@ -77,6 +83,10 @@ public class SocketClient {
         catch (IOException e) {
             Log.e("SocketClient", "close() error --> " + e);
         }
+    }
+
+    public boolean isConnected() {
+        return (client != null && quit == false);
     }
 
 }

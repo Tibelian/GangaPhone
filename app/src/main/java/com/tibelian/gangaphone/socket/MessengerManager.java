@@ -26,22 +26,30 @@ public class MessengerManager extends Thread {
     }
 
     public void init() {
+
         client = SocketClient.get();
-        while (true) {
-            String json = client.receive();
+        client.open();
+
+        while (client.isConnected()) {
+            String msg = client.receive();
             try {
-                JsonObject result = new Gson().fromJson(json, JsonObject.class);
-                String operation = result.get("operation").getAsString();
-                switch (operation) {
+                // result[0] == command/operation
+                // result[1] == args
+                String[] result = msg.split("\n");
+                switch (result[0]) {
                     case "identity":
                         int id = Session.get().getUser().getId();
-                        client.send("{\"operation\":\"identity\", \"user_id\":"+id+"}");
+                        client.send("identity\n"+id);
                         break;
                     case "new_message":
                         refreshMessages();
                         break;
                     case "is_online":
-                        whoIsConnected(result.get("data").getAsJsonArray());
+                        ArrayList<Integer> isOnlineIds = new ArrayList<>();
+                        String[] isOnlineStr = result[1].trim().split(",");
+                        for (String isOnlineId:isOnlineStr)
+                            isOnlineIds.add(Integer.parseInt(isOnlineId));
+                        whoIsConnected(isOnlineIds);
                         break;
                     case "quit":
                         client.close();
@@ -50,22 +58,19 @@ public class MessengerManager extends Thread {
             }
             catch (Exception e) {
                 Log.d("MessengerManager", "error --> " + e);
-                Log.d("MessengerManager", "received --> " + json);
+                Log.d("MessengerManager", "received --> " + msg);
             }
         }
     }
 
-    private void whoIsConnected(JsonArray users)
+    private void whoIsConnected(ArrayList<Integer> users)
     {
         ArrayList<Chat> chats = Session.get().getUser().getChats();
-        for (JsonElement je:users)
+        for (int id:users)
         {
-            JsonObject jo = je.getAsJsonObject();
-            int userId = jo.get("user_id").getAsInt();
-            boolean isOnline = jo.get("online").getAsBoolean();
             for(Chat c:chats) {
-                if (c.getUser().getId() == userId) {
-                    c.getUser().setOnline(isOnline);
+                if (c.getUser().getId() == id) {
+                    c.getUser().setOnline(true);
                     break;
                 }
             }
@@ -92,7 +97,7 @@ public class MessengerManager extends Thread {
         }
     }
 
-    private void notifyActivities()
+    public static void notifyActivities()
     {
         // check current activity
         if (ChatActivity.isActive()) {

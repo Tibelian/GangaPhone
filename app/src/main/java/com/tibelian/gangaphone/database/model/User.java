@@ -2,6 +2,9 @@ package com.tibelian.gangaphone.database.model;
 
 import android.util.Log;
 
+import com.tibelian.gangaphone.messenger.ChatListActivity;
+import com.tibelian.gangaphone.socket.MessengerManager;
+
 import java.util.ArrayList;
 
 public class User {
@@ -14,7 +17,9 @@ public class User {
     private String location;
     private ArrayList<Product> products = new ArrayList<>();
     private ArrayList<Chat> chats = new ArrayList<>();
+
     private boolean isOnline;
+    private long lastConnUpdate;
 
     public int getId() {
         return id;
@@ -94,6 +99,27 @@ public class User {
 
     public void setOnline(boolean online) {
         isOnline = online;
+        lastConnUpdate = System.currentTimeMillis();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                final long timeToWait = 60000; // 60 seconds
+
+                try { Thread.sleep(timeToWait); }
+                catch (InterruptedException e) {}
+
+                final long now = System.currentTimeMillis();
+                Log.e("setOnline", now + " <= " + (lastConnUpdate+timeToWait));
+
+                if (now <= (lastConnUpdate + timeToWait)) {
+                    isOnline = false;
+                    MessengerManager.notifyActivities();
+                }
+
+            }
+        }).start();
     }
 
 }
