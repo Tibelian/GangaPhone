@@ -1,5 +1,6 @@
 package com.tibelian.gangaphone.database.model;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.tibelian.gangaphone.messenger.socket.MessengerManager;
@@ -114,7 +115,7 @@ public class User {
 
                 if (now <= (lastConnUpdate + timeToWait)) {
                     isOnline = false;
-                    MessengerManager.notifyActivities();
+                    MessengerManager.notifyActivities(false);
                 }
 
             }

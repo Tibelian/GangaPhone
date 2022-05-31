@@ -16,6 +16,7 @@
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_teal_rounded.xml" value="0.198" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_teal_rounded_darker.xml" value="0.198" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/drawable/gradient_teal_rounded_reverse.xml" value="0.198" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout-large-land/activity_messenger.xml" value="0.23560910307898258" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/activity_main.xml" value="0.17831813576494426" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/activity_messenger.xml" value="0.17831813576494426" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/activity_products.xml" value="0.17831813576494426" />
@@ -34,6 +35,8 @@
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/list_item_product.xml" value="0.17831813576494426" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/layout/list_item_profile_product.xml" value="0.17831813576494426" />
         <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/menu/options_main.xml" value="0.32407407407407407" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.196" />
+        <entry key="..\:/_asprojects/GangaPhone/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.196" />
       </map>
     </option>
   </component>

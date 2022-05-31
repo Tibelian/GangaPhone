@@ -79,4 +79,7 @@
     <string name="apply_filter">APLICAR FILTRO</string>
     <string name="cancel">CANCELAR</string>
     <string name="results_found">resultados encontrados</string>
+    <string name="prev">&lt; ANTERIOR</string>
+    <string name="next">SIGUIENTE &gt;</string>
+    <string name="newMessageTitle">Has recibido un nuevo mensaje</string>
 </resources>

@@ -3,6 +3,7 @@ package com.tibelian.gangaphone.api;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -24,9 +25,6 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
         this.url = url;
         this.imageView = imageView;
     }
-    public ImageLoadTask(String url) {
-        this.url = url;
-    }
 
     @Override
     protected Bitmap doInBackground(Void... params) {
@@ -46,7 +44,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
             Bitmap myBitmap = BitmapFactory.decodeStream(input);
             return myBitmap;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("ImageLoadTask", "url --> " + url);
         }
         return null;
     }

@@ -22,6 +22,7 @@ import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.messenger.ChatListActivity;
+import com.tibelian.gangaphone.messenger.socket.SocketClient;
 
 import java.util.List;
 
@@ -151,6 +152,11 @@ public class ProductListActivity extends AppCompatActivity {
             case R.id.menu_user:
                 Session.get().setUser(null);
                 Session.get().setLoggedIn(false);
+
+                // important
+                SocketClient.get().close();
+                SocketClient.get().setAsNull();
+
                 startActivity(new Intent(ProductListActivity.this, MainActivity.class));
                 return true;
         }

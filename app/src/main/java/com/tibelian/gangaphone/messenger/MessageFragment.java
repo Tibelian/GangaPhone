@@ -26,6 +26,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.api.RestApi;
+import com.tibelian.gangaphone.database.model.Chat;
 import com.tibelian.gangaphone.database.model.Message;
 import com.tibelian.gangaphone.database.model.User;
 import com.tibelian.gangaphone.messenger.socket.SocketClient;
@@ -72,6 +73,9 @@ public class MessageFragment extends Fragment {
             try {
                 mTarget = new RestApi().findUserById(userId);
                 isNewTarget = true;
+                Chat c = new Chat();
+                c.setUser(mTarget);
+                Session.get().getUser().getChats().add(c);
             } catch (IOException e) {
                 Log.e("MessageFragment", "onCreate error RestApi --> " + e);
             }
@@ -131,7 +135,9 @@ public class MessageFragment extends Fragment {
             mMessagesAdapter.notifyDataSetChanged();
 
             // scroll to the last message
-            mMsgRecyclerView.smoothScrollToPosition(mMessagesAdapter.getItemCount() - 1);
+            try {
+                mMsgRecyclerView.smoothScrollToPosition(mMessagesAdapter.getItemCount() - 1);
+            } catch (IllegalArgumentException e) {}
 
         } catch (IOException e) {
             Log.e("loadMessages", "error --> " + e);

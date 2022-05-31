@@ -1,6 +1,7 @@
 package com.tibelian.gangaphone.product;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.tibelian.gangaphone.api.RestApi;
 import com.tibelian.gangaphone.api.ImageLoadTask;
 import com.tibelian.gangaphone.database.model.Product;
 import com.tibelian.gangaphone.messenger.ChatActivity;
+import com.tibelian.gangaphone.messenger.ChatListActivity;
 
 import java.io.IOException;
 
@@ -125,13 +127,12 @@ public class ProductDetailsFragment extends Fragment {
         mContactSeller.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Session.get().isLoggedIn() == false) {
+                if (Session.get().isLoggedIn() == false)
                     Toast.makeText(getActivity(),
                             "MUST LOGIN TO USE THIS OPTION", Toast.LENGTH_LONG).show();
-                } else {
+                else
                     startActivity(ChatActivity.newIntent(
                             getActivity(), mProduct.getOwner().getId()));
-                }
             }
         });
 

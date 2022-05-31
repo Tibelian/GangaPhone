@@ -10,7 +10,7 @@
         android:layout_height="275dp"
         android:background="#000"
         android:layout_marginBottom="5dp">
-        <pl.droidsonroids.gif.GifImageView
+        <ImageView
             android:id="@+id/productDetails_Picture"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -27,7 +27,7 @@
                 android:id="@+id/productDetails_PrevImg"
                 android:textAlignment="center"
                 android:padding="10dp"
-                android:text="&lt; PREV"
+                android:text="@string/prev"
                 android:textSize="12dp"
                 android:textColor="@color/white"
                 android:layout_weight="1"
@@ -43,7 +43,7 @@
                 android:id="@+id/productDetails_NextImg"
                 android:textAlignment="center"
                 android:padding="10dp"
-                android:text="NEXT &gt;"
+                android:text="@string/next"
                 android:textSize="12dp"
                 android:textColor="@color/white"
                 android:layout_weight="1"
@@ -120,14 +120,14 @@
             android:id="@+id/productDetails_Phone"
             android:textColor="@color/teal_700"
             android:layout_marginTop="5dp"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="phone" />
         <TextView
             android:id="@+id/productDetails_Email"
             android:textColor="@color/teal_700"
             android:layout_marginTop="5dp"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="email" />
 

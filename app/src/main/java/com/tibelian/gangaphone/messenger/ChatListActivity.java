@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,10 @@ import java.util.List;
 public class ChatListActivity extends AppCompatActivity {
 
     private static boolean active = false;
+    private static ChatListActivity context = null;
+
+    private static View mMessageFrame;
+    private static final String EXTRA_USER_ID = "current_user_id";
 
     private static RecyclerView mPostsRecyclerView;
     private static PostListAdapter mPostAdapter;
@@ -45,17 +50,35 @@ public class ChatListActivity extends AppCompatActivity {
 
         // bind xml elements
         mPostsRecyclerView = findViewById(R.id.posts_recycler);
+        mMessageFrame = findViewById(R.id.messenger_large_currentChat);
 
         // init recycler
         mPostsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mPostAdapter = new PostListAdapter();
         mPostsRecyclerView.setAdapter(mPostAdapter);
 
+        // if screen size is large
+        if (mMessageFrame != null) {
+            Log.i("ChatListActivity", "onCreate large screen detected");
+            int uid = getIntent().getIntExtra(EXTRA_USER_ID, 0);
+            if (uid == 0) uid = Session.get().getUser().getChats().get(0).getUser().getId();
+            loadMessageFragment(uid);
+        }
+
         // load messages
         loadChats(false);
         checkWhoIsOnline();
 
         getSupportActionBar().setSubtitle(R.string.messenger_subtitle);
+    }
+
+    private void loadMessageFragment(int uid) {
+        MessageFragment msgFragment = MessageFragment.newInstance(uid);
+        FragmentManager fManager = getSupportFragmentManager();
+        fManager.beginTransaction()
+                .replace(mMessageFrame.getId(), msgFragment)
+                .commit()
+        ;
     }
 
     public static void checkWhoIsOnline() {
@@ -73,18 +96,23 @@ public class ChatListActivity extends AppCompatActivity {
         }).start();
     }
 
-    public static void loadChats(boolean fromDatabase) {
-        try {
-            if (fromDatabase)
-                Session.get().getUser().setChats(JsonMapper.mapChats(
-                        new RestApi().findMessages(Session.get().getUser().getId()),
-                        Session.get().getUser()
-                ));
-            mPostAdapter.setPosts(Session.get().getUser().getChats());
-            mPostAdapter.notifyDataSetChanged();
-        } catch (IOException io) {
-            Log.e("ChatListActivity", "loadChats error --> " + io);
-        }
+    public void loadChats(boolean fromDatabase) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (fromDatabase)
+                        Session.get().getUser().setChats(JsonMapper.mapChats(
+                                new RestApi().findMessages(Session.get().getUser().getId()),
+                                Session.get().getUser()
+                        ));
+                    mPostAdapter.setPosts(Session.get().getUser().getChats());
+                    mPostAdapter.notifyDataSetChanged();
+                } catch (IOException io) {
+                    Log.e("ChatListActivity", "loadChats error --> " + io);
+                }
+            }
+        });
     }
 
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
@@ -132,8 +160,11 @@ public class ChatListActivity extends AppCompatActivity {
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(ChatActivity.newIntent(
-                                ChatListActivity.this, chat.getUser().getId()));
+                        if (mMessageFrame == null )
+                            startActivity(ChatActivity.newIntent(
+                                    ChatListActivity.this, chat.getUser().getId()));
+                        else
+                            loadMessageFragment(chat.getUser().getId());
                     }
                 });
 
@@ -188,11 +219,16 @@ public class ChatListActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         active = true;
+        context = this;
     }
     @Override
     public void onStop() {
         super.onStop();
         active = false;
+        context = null;
+    }
+    public static ChatListActivity getContext() {
+        return context;
     }
     public static boolean isActive() {
         return active;

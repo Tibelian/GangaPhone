@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class SocketClient {
 
@@ -28,6 +29,10 @@ public class SocketClient {
         if (socketClient == null)
             socketClient = new SocketClient(HOST, PORT);
         return socketClient;
+    }
+
+    public void setAsNull() {
+        socketClient = null;
     }
 
     private SocketClient(String host, int port) {
@@ -53,7 +58,7 @@ public class SocketClient {
             Log.d("SocketClient", "** CLIENT RECEIVED A MESSAGE FROM THE SERVER **");
             return msgFromServer.readUTF();
         }
-        catch (EOFException eo) {
+        catch (SocketException | EOFException eo) {
             Log.e("SocketClient", "server is offline --> " + eo);
             quit = true;
         }

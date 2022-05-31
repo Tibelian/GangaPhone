@@ -79,4 +79,7 @@
     <string name="apply_filter">APLICA FILTRU</string>
     <string name="cancel">ANULEAZA</string>
     <string name="results_found">rezultate găsite</string>
+    <string name="prev">&lt; ANTERIORUL</string>
+    <string name="next">URMĂTORUL &gt;</string>
+    <string name="newMessageTitle">Ai primit un mesaj nou</string>
 </resources>

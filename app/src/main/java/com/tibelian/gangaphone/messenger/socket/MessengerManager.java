@@ -1,7 +1,14 @@
 package com.tibelian.gangaphone.messenger.socket;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+
+import com.tibelian.gangaphone.App;
+import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.Session;
 import com.tibelian.gangaphone.utils.JsonMapper;
 import com.tibelian.gangaphone.api.RestApi;
@@ -15,6 +22,7 @@ import java.util.ArrayList;
 public class MessengerManager extends Thread {
 
     private SocketClient client;
+    private static final String CHANNEL_ID = "MESSENGER";
 
     @Override
     public void run() {
@@ -71,7 +79,7 @@ public class MessengerManager extends Thread {
                 }
             }
         }
-        notifyActivities();
+        notifyActivities(false);
     }
 
     private void refreshMessages()
@@ -86,23 +94,47 @@ public class MessengerManager extends Thread {
                             ), Session.get().getUser()
                     )
             );
-            notifyActivities();
+            notifyActivities(true);
         }
         catch (IOException e) {
             Log.e("MessengerManager", "refreshMessages() error --> " + e);
         }
     }
 
-    public static void notifyActivities()
+    public static void notifyActivities(boolean alsoUser)
     {
         // check current activity
         if (ChatActivity.isActive()) {
             // if ChatFragment is active then refresh the messages
-            ChatActivity.update();
+            ChatActivity.getContext().update();
         }
         else if (ChatListActivity.isActive()) {
             // if on ChatList is active then refresh the adapter list of users
-            ChatListActivity.loadChats(false);
+            ChatListActivity.getContext().loadChats(false);
+        }
+        else if (alsoUser) {
+            Log.i("MessengerManager", "notifyActivities alsoUser");
+            try {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+                {
+                    NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager nm = (NotificationManager) App.getContext()
+                            .getSystemService(Context.NOTIFICATION_SERVICE);
+                    nm.createNotificationChannel(channel);
+
+                    // create notification
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(App.getContext(), CHANNEL_ID)
+                            .setSmallIcon(R.drawable.logo_icon)
+                            .setContentTitle(App.getContext().getString(R.string.newMessageTitle))
+                            .setAutoCancel(true)
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                    // send notif
+                    nm.notify(1, builder.build());
+                }
+            }
+            catch (Exception e) {
+                Log.e("MessengerManager", "notifyActivities error --> " + e);
+            }
         }
     }
 
