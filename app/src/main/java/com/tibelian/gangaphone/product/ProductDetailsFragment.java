@@ -93,9 +93,16 @@ public class ProductDetailsFragment extends Fragment {
         mLocation.setText(mProduct.getOwner().getLocation());
         mPrice.setText(mProduct.getPrice() + " €");
         mDescription.setText(mProduct.getDescription());
-        mStatus.setText(mProduct.getStatus());
         mPhone.setText(mProduct.getOwner().getPhone());
         mEmail.setText(mProduct.getOwner().getEmail());
+
+        String status = "unknown";
+        switch(mProduct.getStatus()) {
+            case "broken":     status = getString(R.string.status_broken);     break;
+            case "new":        status = getString(R.string.status_new);        break;
+            case "scratched":  status = getString(R.string.status_scratched);  break;
+        }
+        mStatus.setText(status);
 
         mPrevImg.setOnClickListener(new View.OnClickListener() {
             @Override
