@@ -1,18 +1,25 @@
 package com.tibelian.gangaphone.api;
 
-import static com.tibelian.gangaphone.api.RestApi.API_AUTH;
+
+import static com.tibelian.gangaphone.api.RestApi.API_AUTH_SECRET;
+import static com.tibelian.gangaphone.api.RestApi.API_AUTH_TOKEN;
 
 import com.tibelian.gangaphone.utils.FileHandler;
 
 import java.io.IOException;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -28,6 +35,14 @@ public class OkHttpHandler {
     private Callback callback;
     public static final MediaType JSON= MediaType.get("application/json; charset=utf-8");
 
+    private String getAuth() {
+        SecretKey key = Keys.hmacShaKeyFor(API_AUTH_SECRET.getBytes(StandardCharsets.UTF_8));
+        return Jwts.builder()
+                .claim("token", API_AUTH_TOKEN)
+                .claim("stamp", new Date().getTime())
+                .signWith(key)
+                .compact();
+    }
 
     public OkHttpHandler(Callback callback) {
         this.callback = callback;
@@ -73,7 +88,7 @@ public class OkHttpHandler {
 
         // build the request
         Request request = new Request.Builder()
-                .header("Authorization", API_AUTH)
+                .header("Authorization", "Brearer " + getAuth())
                 .url(url)
                 .post(body.build())
                 .build();
@@ -96,7 +111,7 @@ public class OkHttpHandler {
             formBody.add(param.getKey(), param.getValue());
         // build the request
         Request request = new Request.Builder()
-                .header("Authorization", API_AUTH)
+                .header("Authorization", "Brearer " + getAuth())
                 .url(url)
                 .post(formBody.build())
                 .build();
@@ -113,7 +128,7 @@ public class OkHttpHandler {
     public void postJson(String url, String json) throws IOException {
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
-                .header("Authorization", API_AUTH)
+                .header("Authorization", "Brearer " + getAuth())
                 .url(url)
                 .post(body)
                 .build();
@@ -128,7 +143,7 @@ public class OkHttpHandler {
      */
     public void get(String url) throws IOException {
         Request request = new Request.Builder()
-                .header("Authorization", API_AUTH)
+                .header("Authorization", "Brearer " + getAuth())
                 .url(url)
                 .build();
         client.newCall(request).enqueue(callback);

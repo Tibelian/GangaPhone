@@ -28,7 +28,8 @@ import okhttp3.Response;
 
 public class RestApi {
 
-    public static final String API_AUTH                       = "secret";
+    public static final String API_AUTH_TOKEN                 = "g6vckky+GFwl50kJ";
+    public static final String API_AUTH_SECRET                = "ExNCbWex68pdxiF+mXtSPnbLsow7JTWe";
     public static final String API_URL                        = "https://gangaphone.tibelian.com";
 
     public static final String URI_SEARCH_PRODUCTS        = API_URL + "/product/search";
