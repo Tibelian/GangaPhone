@@ -69,6 +69,9 @@ public class SocketClient {
             DataOutputStream msgToServer = new DataOutputStream(output);
             msgToServer.writeUTF(msg);
         }
+        catch (NullPointerException ne) {
+            Log.e("SocketClient", "send() NullPointerException --> server could be offline");
+        }
         catch (IOException e) {
             Log.e("SocketClient", "send() error --> " + e);
         }

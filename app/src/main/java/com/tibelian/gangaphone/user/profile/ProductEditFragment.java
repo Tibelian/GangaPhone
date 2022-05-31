@@ -93,7 +93,6 @@ public class ProductEditFragment extends Fragment {
         if (isNew) {
             mProduct = new Product();
             mProduct.setOwner(Session.get().getUser());
-            getActivity().getActionBar().setSubtitle(R.string.edit_p_new);
         }
         else {
             ArrayList<Product> sesProd = Session.get().getUser().getProducts();
