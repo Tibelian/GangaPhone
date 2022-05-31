@@ -87,7 +87,7 @@ public class ProductsFragment extends Fragment {
         mPostAdapter.setPosts(posts);
         mPostAdapter.notifyDataSetChanged();
         // show results num
-        mNumPostsFound.setText(posts.size() + getString(R.string.results_found));
+        mNumPostsFound.setText(posts.size() + " " + getString(R.string.results_found));
     }
 
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {

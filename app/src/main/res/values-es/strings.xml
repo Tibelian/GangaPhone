@@ -78,5 +78,5 @@
     <string name="custom_search">Búsqueda personalizada</string>
     <string name="apply_filter">APLICAR FILTRO</string>
     <string name="cancel">CANCELAR</string>
-    <string name="results_found"> resultados encotrados</string>
+    <string name="results_found">resultados encontrados</string>
 </resources>
