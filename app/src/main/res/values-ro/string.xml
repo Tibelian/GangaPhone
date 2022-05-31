@@ -75,4 +75,8 @@
     <string name="product_details">Detalii produs</string>
     <string name="messenger_subtitle">Serviciu de mesagerie</string>
     <string name="chatting">Conversație</string>
+    <string name="custom_search">Căutare personalizată</string>
+    <string name="apply_filter">APLICA FILTRU</string>
+    <string name="cancel">ANULEAZA</string>
+    <string name="results_found"> rezultate găusite</string>
 </resources>

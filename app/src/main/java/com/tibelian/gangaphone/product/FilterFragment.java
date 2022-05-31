@@ -52,7 +52,7 @@ public class FilterFragment extends DialogFragment {
 
         // show modal
         AlertDialog dialog = builder.create();
-        dialog.setTitle("Custom search");
+        dialog.setTitle(getString(R.string.custom_search));
         dialog.show();
 
         return dialog;
@@ -75,7 +75,7 @@ public class FilterFragment extends DialogFragment {
 
     private void initButtonEvents(AlertDialog.Builder builder) {
 
-        builder.setPositiveButton("APPLY FILTER", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.apply_filter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 applyFilter();
@@ -84,7 +84,7 @@ public class FilterFragment extends DialogFragment {
                 getParentFragmentManager().setFragmentResult(ListProductActivity.DIALOG_FILTER, result);
             }
         });
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 // do nothing
@@ -127,9 +127,6 @@ public class FilterFragment extends DialogFragment {
             CurrentFilter.maxPrice = Double.parseDouble(mPriceMaxInput.getText().toString());
         if (!mPriceMinInput.getText().toString().equals(""))
             CurrentFilter.minPrice = Double.parseDouble(mPriceMinInput.getText().toString());
-
-        Log.e("maxPrice", mPriceMaxInput.getText().toString());
-        Log.e("minPrice", mPriceMinInput.getText().toString());
 
         // load sorting
         if (mOrderDateAsc.isChecked()) CurrentFilter.orderBy = "date.asc";

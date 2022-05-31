@@ -83,12 +83,11 @@ public class ProductsFragment extends Fragment {
             posts = new RestApi().searchProducts(true);
         } catch (IOException e) {
             Log.e("ProductFragment", "reloadProducts error --> " + e);
-            e.printStackTrace();
         }
         mPostAdapter.setPosts(posts);
         mPostAdapter.notifyDataSetChanged();
         // show results num
-        mNumPostsFound.setText(posts.size() + " results found");
+        mNumPostsFound.setText(posts.size() + getString(R.string.results_found));
     }
 
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
@@ -158,16 +157,9 @@ public class ProductsFragment extends Fragment {
                 mProductLocation.setText(product.getOwner().getLocation());
                 mProductPrice.setText(product.getPrice() + " €");
 
-                Log.e("product fragment", product.getPictures().size() + "");
-                if (product.getPictures().size() > 0) {
-                    Log.e("image", "product is loading image");
+                if (product.getPictures().size() > 0)
                     new ImageLoadTask(product.getPictures().get(0).getUrl(), mProductThumbnail)
                             .execute();
-                }
-                else {
-                    Log.e("image", "product has no images");
-                }
-
             }
 
         }

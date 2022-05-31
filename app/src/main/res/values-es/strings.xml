@@ -75,4 +75,8 @@
     <string name="product_details">Detalles del producto</string>
     <string name="messenger_subtitle">Mensajería</string>
     <string name="chatting">Chateando</string>
+    <string name="custom_search">Búsqueda personalizada</string>
+    <string name="apply_filter">APLICAR FILTRO</string>
+    <string name="cancel">CANCELAR</string>
+    <string name="results_found"> resultados encotrados</string>
 </resources>
