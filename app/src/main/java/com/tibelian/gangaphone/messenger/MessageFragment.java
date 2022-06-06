@@ -36,13 +36,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Show all messages
+ */
 public class MessageFragment extends Fragment {
 
+    // control variables
     private static final String ARG_USER_ID = "user_id";
     private int userId;
+
+    // currently talking with
     private User mTarget;
+
+    // first time talking with this user
     private boolean isNewTarget = false;
 
+    // member variables - xml elements
     private TextView mUsername;
     private TextView mStatus;
     private RecyclerView mMsgRecyclerView;
@@ -50,6 +59,12 @@ public class MessageFragment extends Fragment {
     private EditText mInputEditText;
     private Button mSendButton;
 
+    /**
+     * Initialize the fragment with an argument
+     * knowing the targets id
+     * @param uid
+     * @return MessageFragment
+     */
     public static MessageFragment newInstance(int uid) {
         Bundle args = new Bundle();
         args.putInt(ARG_USER_ID, uid);
@@ -58,12 +73,19 @@ public class MessageFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * run on init this fragment
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // obtain the target's id
         userId = getArguments().getInt(ARG_USER_ID, 0);
 
+        // load target from session
+        // so it must be initialized
         try {
             mTarget = Session.get().getUser().getChatFrom(userId).getUser();
         } catch(NullPointerException ne) {
@@ -80,12 +102,19 @@ public class MessageFragment extends Fragment {
                 Log.e("MessageFragment", "onCreate error RestApi --> " + e);
             }
         }
-
     }
 
+    /**
+     * create the main view from the layout
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // access the view using the layout
         View view = inflater.inflate(R.layout.fragment_list_messages, container,false);
 
         // load components
@@ -118,6 +147,11 @@ public class MessageFragment extends Fragment {
         return view;
     }
 
+    /**
+     * update the adapter list
+     * from database or just from session
+     * @param fromDatabase
+     */
     public void loadMessages(boolean fromDatabase) {
         try {
             // get messages from database if necessary
@@ -144,6 +178,10 @@ public class MessageFragment extends Fragment {
         }
     }
 
+    /**
+     * create message and save it into the database
+     * also notify the tcp server
+     */
     private void sendMessage() {
 
         // obtain the text
@@ -153,6 +191,7 @@ public class MessageFragment extends Fragment {
         if (content.length() == 0)
             return;
 
+        // init the new message
         Message newMsg = new Message();
         newMsg.setDate(new Date());
         newMsg.setContent(content);
@@ -162,8 +201,10 @@ public class MessageFragment extends Fragment {
         from.setId(Session.get().getUser().getId());
         newMsg.setFrom(from);
 
+        // message is sent to this user
         newMsg.setTo(mTarget);
 
+        // save the message into the database
         int mId = -1;
         try {
             mId = new RestApi().createMessage(newMsg);
@@ -174,6 +215,8 @@ public class MessageFragment extends Fragment {
         if (mId != -1) {
             // clear input text
             mInputEditText.setText("");
+
+            // update the session
             newMsg.setId(mId);
             Session.get().getUser()
                     .getChatFrom(mTarget.getId()).getMessages().add(newMsg);
@@ -190,6 +233,11 @@ public class MessageFragment extends Fragment {
 
     }
 
+    /**
+     * the TCP server is notified
+     * that the current user has sent a message
+     * @param userId
+     */
     private void notifyNewMessage(int userId) {
         new Thread(new Runnable() {
             @Override
@@ -199,15 +247,27 @@ public class MessageFragment extends Fragment {
         }).start();
     }
 
+    /**
+     * custom message adapter list
+     */
     private class MsgListAdapter extends RecyclerView.Adapter<MsgListAdapter.ViewHolder> {
 
+        // all messages to show
         private List<Message> mMessasges = new ArrayList<>();
+
+        // setter
         public void setMessages(List<Message> posts) {
             mMessasges.clear();
             for (Message m:posts)
                 mMessasges.add(m);
         }
 
+        /**
+         * create the view using a layout
+         * @param parent
+         * @param viewType
+         * @return MsgListAdapter.ViewHolder
+         */
         @NonNull
         @Override
         public MsgListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -217,25 +277,41 @@ public class MessageFragment extends Fragment {
             );
         }
 
+        /**
+         * set data to the xml elements
+         * @param viewHolder
+         * @param position
+         */
         @Override
         public void onBindViewHolder(MsgListAdapter.ViewHolder viewHolder, final int position) {
             viewHolder.msg = ( (Message) (mMessasges.get(position)) );
             viewHolder.bind();
         }
 
+        /**
+         * number of messages
+         * @return int
+         */
         @Override
         public int getItemCount() {
             return mMessasges.size();
         }
 
+        /**
+         * each message view
+         */
         public class ViewHolder extends RecyclerView.ViewHolder {
 
+            // current message
             public Message msg;
+
+            // all member variables - xml elements
             private TextView mDate;
             private CheckBox mIsRead;
             private TextView mContent;
             private MaterialCardView mContainer;
 
+            // constructor
             public ViewHolder(View v) {
                 super(v);
                 // bind xml textview
@@ -246,11 +322,17 @@ public class MessageFragment extends Fragment {
 
             }
 
+            /**
+             * set data to the elements
+             */
             public void bind()
             {
+                // parse time to string
                 String timeAgo = DateUtils.getRelativeTimeSpanString(
                         msg.getDate().getTime()).toString();
                 mDate.setText(timeAgo);
+
+                // message content
                 mContent.setText(msg.getContent());
 
                 if (msg.getFrom().getId() == mTarget.getId()) {

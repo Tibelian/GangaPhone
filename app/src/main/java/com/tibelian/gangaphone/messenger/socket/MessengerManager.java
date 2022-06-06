@@ -19,24 +19,43 @@ import com.tibelian.gangaphone.messenger.ChatListActivity;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Manage the connection with the messenger server
+ */
 public class MessengerManager extends Thread {
 
+    // the connection
     private SocketClient client;
+
+    // notification channel id
     private static final String CHANNEL_ID = "MESSENGER";
 
+    /**
+     * run the thread
+     */
     @Override
     public void run() {
         init();
     }
 
+    /**
+     *
+     */
     public void init() {
 
+        // access the singleton
         client = SocketClient.get();
+        // start connection
         client.open();
 
-        while (client.isConnected()) {
+        // while client is connected correctly
+        while (client.isConnected())
+        {
+            // wait for input data
             String msg = client.receive();
             try {
+                // now interpret received message
+                // all input data must have the next pattern:
                 // result[0] == command/operation
                 // result[1] == args
                 String[] result = msg.split("\n");
@@ -67,6 +86,10 @@ public class MessengerManager extends Thread {
         }
     }
 
+    /**
+     * method to set which users are connected
+     * @param users
+     */
     private void whoIsConnected(ArrayList<Integer> users)
     {
         ArrayList<Chat> chats = Session.get().getUser().getChats();
@@ -79,13 +102,17 @@ public class MessengerManager extends Thread {
                 }
             }
         }
+        // update the view
         notifyActivities(false);
     }
 
+    /**
+     * update messages
+     */
     private void refreshMessages()
     {
         try {
-            // load messages
+            // load messages from database
             Session.get().getUser().getChats().clear();
             Session.get().getUser().setChats(
                     JsonMapper.mapChats(
@@ -94,6 +121,7 @@ public class MessengerManager extends Thread {
                             ), Session.get().getUser()
                     )
             );
+            // update the view
             notifyActivities(true);
         }
         catch (IOException e) {
@@ -101,6 +129,11 @@ public class MessengerManager extends Thread {
         }
     }
 
+    /**
+     * detect if current view has to be rendered again
+     * else then send a notification if sdk version is compatible
+     * @param alsoUser
+     */
     public static void notifyActivities(boolean alsoUser)
     {
         // check current activity

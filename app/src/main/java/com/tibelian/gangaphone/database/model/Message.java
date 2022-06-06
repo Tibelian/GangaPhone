@@ -2,14 +2,23 @@ package com.tibelian.gangaphone.database.model;
 
 import java.util.Date;
 
+/**
+ * Message Model
+ */
 public class Message {
 
+    // all message data and info
     private int id;
     private String content;
     private Date date;
     private boolean read;
     private User to;
     private User from;
+
+
+    /////////////////////////
+    // GETTERS AND SETTERS //
+    /////////////////////////
 
     public int getId() {
         return id;

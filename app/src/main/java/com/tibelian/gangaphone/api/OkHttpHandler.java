@@ -29,12 +29,24 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * Manage basic REST API requests
+ */
 public class OkHttpHandler {
 
+    // the 'browser'
     private OkHttpClient client;
+
+    // the method to execute when task is finished
     private Callback callback;
+
+    // json header
     public static final MediaType JSON= MediaType.get("application/json; charset=utf-8");
 
+    /**
+     * Generate the secret authorization JWT
+     * @return String
+     */
     private String getAuth() {
         SecretKey key = Keys.hmacShaKeyFor(API_AUTH_SECRET.getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
@@ -44,26 +56,32 @@ public class OkHttpHandler {
                 .compact();
     }
 
+    /**
+     * Constructor
+     * @param callback
+     */
     public OkHttpHandler(Callback callback) {
+        // set the callback
         this.callback = callback;
-
+        // set the most basic interceptor
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        // append interceptor to the client builder
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         clientBuilder.addInterceptor(logging);
-
+        // do not verify the ssl
         clientBuilder.hostnameVerifier(new HostnameVerifier() {
             @Override
             public boolean verify(String s, SSLSession sslSession) {
                 return true;
             }
         });
+        // build the 'browser'
         client = clientBuilder.build();
     }
 
     /**
-     *
+     * Send POST request as multipart data
      * @param url
      * @param params
      * @param files
@@ -97,7 +115,7 @@ public class OkHttpHandler {
     }
 
     /**
-     *
+     * Send POST request as simple form
      * @param url
      * @param params
      * @return
@@ -119,7 +137,7 @@ public class OkHttpHandler {
     }
 
     /**
-     *
+     * Send POST request as JSON
      * @param url
      * @param json
      * @return
@@ -136,7 +154,7 @@ public class OkHttpHandler {
     }
 
     /**
-     *
+     * Send GET request
      * @param url
      * @return
      * @throws IOException

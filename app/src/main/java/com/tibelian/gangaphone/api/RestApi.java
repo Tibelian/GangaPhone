@@ -26,12 +26,17 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+/**
+ * The database manager
+ */
 public class RestApi {
 
+    // JWT AUTHORIZATION and TARGET
     public static final String API_AUTH_TOKEN                 = "g6vckky+GFwl50kJ";
     public static final String API_AUTH_SECRET                = "ExNCbWex68pdxiF+mXtSPnbLsow7JTWe";
     public static final String API_URL                        = "https://gangaphone.tibelian.com";
 
+    // each petition
     public static final String URI_SEARCH_PRODUCTS        = API_URL + "/product/search";
     public static final String URI_FIND_PRODUCT           = API_URL + "/product/{id}";
     public static final String URI_INSERT_PRODUCT         = API_URL + "/product/new";
@@ -46,9 +51,16 @@ public class RestApi {
     public static final String URI_INSERT_MESSAGE         = API_URL + "/message/new";
 
     // MANAGE PRODUCTS
+
+    /**
+     * Obtain the full list of products, you can apply the main filter
+     * @param useMainFilter
+     * @return ArrayList<Product>
+     * @throws IOException
+     */
     public ArrayList<Product> searchProducts(boolean useMainFilter) throws IOException {
 
-        //
+        // synchronize the result
         final SyncResult syncResult = new SyncResult();
 
         // create request
@@ -60,7 +72,10 @@ public class RestApi {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
+                // list of products
                 ArrayList<Product> list = new ArrayList<>();
+
+                // interpret the result
                 Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
 
                 // obtain response as json
@@ -91,8 +106,15 @@ public class RestApi {
 
     }
 
+    /**
+     * Obtain one single product knowing his id
+     * @param productId
+     * @return Product
+     * @throws IOException
+     */
     public Product findProduct(int productId) throws IOException {
 
+        // wait for the result
         final SyncResult syncResult = new SyncResult();
 
         // create request
@@ -104,6 +126,7 @@ public class RestApi {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
+                // interpret the result as char stream
                 Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
 
                 // obtain response as json
@@ -122,13 +145,20 @@ public class RestApi {
         // execute
         handler.get(url);
 
+        // send the result synchronized
         return (Product) syncResult.getResult();
 
     }
 
+    /**
+     * Insert new product to the database
+     * @param created
+     * @return Product
+     * @throws IOException
+     */
     public Product createProduct(Product created) throws IOException {
 
-        //
+        // we will wait for the result
         final SyncResult syncResult = new SyncResult();
 
         // create request
@@ -140,6 +170,7 @@ public class RestApi {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
+                // interpret result as char stream
                 Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
 
                 // obtain response as json
@@ -151,6 +182,8 @@ public class RestApi {
                             JsonMapper.mapProduct(jsonRes.get("data").getAsJsonObject(), true));
                     return;
                 }
+
+                // if error the result is null
                 syncResult.setResult(null);
 
             }
@@ -185,9 +218,15 @@ public class RestApi {
         // execute
         handler.postMulti(URI_INSERT_PRODUCT, params, files);
 
+        // wait for the synchronized result
         return (Product) syncResult.getResult();
     }
 
+    /**
+     * Update the product's visits
+     * @param productId
+     * @throws IOException
+     */
     public void addProductVisit(int productId) throws IOException  {
 
         // create request
@@ -218,9 +257,15 @@ public class RestApi {
 
     }
 
+    /**
+     * Save the modified product to the database
+     * @param updated
+     * @return Product
+     * @throws IOException
+     */
     public Product updateProduct(Product updated) throws IOException {
 
-        //
+        // result's synchronizer
         final SyncResult syncResult = new SyncResult();
 
         // create request
@@ -232,6 +277,7 @@ public class RestApi {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
+                // interpret result as char stream
                 Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
 
                 // obtain response as json
@@ -290,8 +336,17 @@ public class RestApi {
         return (Product) syncResult.getResult();
     }
 
+    /**
+     * Remove one product from database
+     * @param productId
+     * @return boolean
+     * @throws IOException
+     */
     public boolean deleteProduct(int productId) throws IOException {
+        // result's synchronizer
         SyncResult syncResult = new SyncResult();
+
+        // init the browser with the following callback
         OkHttpHandler handler = new OkHttpHandler(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -299,12 +354,16 @@ public class RestApi {
             }
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                // interpret result
                 Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
+                // check if the result is a valid json
+                // and if the status is OK
                 JsonObject jsonRes = new Gson().fromJson(resReader, JsonObject.class);
                 syncResult.setResult(
                         jsonRes.get("status").getAsString().equals("ok"));
             }
         });
+        // execute the request
         handler.postForm(
                 URI_DELETE_PRODUCT.replace("{id}", ""+productId), new HashMap<>());
         return (boolean) syncResult.getResult();
@@ -312,9 +371,19 @@ public class RestApi {
 
 
     // MANAGE MESSAGES
+
+    /**
+     * Select user's messages
+     * @param userId
+     * @return ArrayList<Message>
+     * @throws IOException
+     */
     public ArrayList<Message> findMessages(int userId) throws IOException {
 
+        // result synchronizer
         final SyncResult syncResult = new SyncResult();
+
+        // init the request
         OkHttpHandler handler = new OkHttpHandler(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -343,12 +412,22 @@ public class RestApi {
         // execute
         handler.get(url);
 
+        // wait for the result
         return (ArrayList<Message>) syncResult.getResult();
     }
 
+    /**
+     * Select all messages where receiver and sender is specified
+     * @param from
+     * @param to
+     * @return ArrayList<Message>
+     * @throws IOException
+     */
     public ArrayList<Message> findMessages(int from, int to) throws IOException {
-
+        // result synchronizer
         final SyncResult syncResult = new SyncResult();
+
+        // init the request
         OkHttpHandler handler = new OkHttpHandler(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -378,12 +457,20 @@ public class RestApi {
         // execute
         handler.get(url);
 
+        // wait for the result
         return (ArrayList<Message>) syncResult.getResult();
     }
 
+    /**
+     * Select one single message where ID
+     * @param id
+     * @return Message
+     * @throws IOException
+     */
     public Message findMessage(int id) throws IOException {
-
+        // result synchronizer
         final SyncResult syncResult = new SyncResult();
+        // init request
         OkHttpHandler handler = new OkHttpHandler(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -407,11 +494,18 @@ public class RestApi {
                 .replace("{id}", "" + id);
         // execute
         handler.get(url);
-
+        // wait for result
         return (Message) syncResult.getResult();
     }
 
+    /**
+     * Insert new message
+     * @param created
+     * @return int
+     * @throws IOException
+     */
     public int createMessage(Message created) throws IOException {
+        // result synchronizer
         final SyncResult syncResult = new SyncResult();
         OkHttpHandler handler = new OkHttpHandler(new Callback() {
             @Override
@@ -428,6 +522,7 @@ public class RestApi {
                     syncResult.setResult(null);
             }
         });
+        // the request is the new message data as json
         HashMap<String, String> params = new HashMap<>();
         params.put("message", new Gson().toJson(created));
         handler.postForm(URI_INSERT_MESSAGE, params);
@@ -436,11 +531,16 @@ public class RestApi {
 
 
     // MANAGE USER
+
+    /**
+     * Select one user where data is parsed as JSON
+     * @param json
+     * @return User
+     * @throws IOException
+     */
     public User findUser(String json) throws IOException {
-
-        //
+        // result synchronizer
         final SyncResult syncResult = new SyncResult();
-
         // create request
         OkHttpHandler handler = new OkHttpHandler(new Callback() {
             @Override
@@ -473,28 +573,51 @@ public class RestApi {
 
         // execute
         handler.postForm(URI_FIND_USER, params);
-
+        // wait for result
         return (User) syncResult.getResult();
 
     }
 
+    /**
+     * select user by id
+     * @param id
+     * @return User
+     * @throws IOException
+     */
     public User findUserById(int id) throws IOException {
         return findUser("{\"id\":"+id+"}");
     }
 
+    /**
+     * select user by username
+     * @param username
+     * @return
+     * @throws IOException
+     */
     public User findUserByUsername(String username) throws IOException {
         return findUser("{\"username\":\""+username+"\"}");
     }
 
+    /**
+     * select user by login credentials
+     * @param username
+     * @param password
+     * @return
+     * @throws IOException
+     */
     public User findUserByLogin(String username, String password) throws IOException {
         return findUser("{\"username\":\""+username+"\", \"password\":\""+password+"\"}");
     }
 
+    /**
+     * Insert user into the database
+     * @param created
+     * @return
+     * @throws IOException
+     */
     public int createUser(User created) throws IOException {
-
-        //
+        // result synchronizer
         final SyncResult syncResult = new SyncResult();
-
         // create request
         OkHttpHandler handler = new OkHttpHandler(new Callback() {
             @Override
@@ -503,19 +626,16 @@ public class RestApi {
             }
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-
+                // result as char stream
                 Reader resReader = response.peekBody(Integer.MAX_VALUE).charStream();
-
                 // obtain response as json
                 JsonObject jsonRes = new Gson().fromJson(resReader, JsonObject.class);
-
                 // check if all is ok and return the user's id
                 if (jsonRes.get("status").getAsString().equals("ok")) {
                     syncResult.setResult(jsonRes.get("data").getAsInt());
                     return;
                 }
                 syncResult.setResult(-1);
-
             }
         });
 
@@ -526,6 +646,7 @@ public class RestApi {
         // execute
         handler.postForm(URI_INSERT_USER, params);
 
+        // wait for result
         return (int) syncResult.getResult();
     }
 

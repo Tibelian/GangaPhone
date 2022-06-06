@@ -3,8 +3,12 @@ package com.tibelian.gangaphone.database.model;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Product Model
+ */
 public class Product implements Cloneable {
 
+    // all product's data and info
     private int id;
     private String name;
     private String description;
@@ -32,6 +36,11 @@ public class Product implements Cloneable {
             }
         }
     }
+
+
+    /////////////////////////
+    // GETTERS AND SETTERS //
+    /////////////////////////
 
     public int getId() {
         return id;

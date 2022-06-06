@@ -32,17 +32,31 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Create messenger list of chats
+ */
 public class ChatListActivity extends AppCompatActivity {
 
+    // control var to detect if current activity is active
     private static boolean active = false;
+
+    // save this context
     private static ChatListActivity context = null;
 
+    // fragment
     private static View mMessageFrame;
+
+    // const to attach intent data
     private static final String EXTRA_USER_ID = "current_user_id";
 
+    // memeber variables, xml elements
     private static RecyclerView mPostsRecyclerView;
     private static PostListAdapter mPostAdapter;
 
+    /**
+     * init activity
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +86,10 @@ public class ChatListActivity extends AppCompatActivity {
         getSupportActionBar().setSubtitle(R.string.messenger_subtitle);
     }
 
+    /**
+     * show selected chat
+     * @param uid
+     */
     private void loadMessageFragment(int uid) {
         MessageFragment msgFragment = MessageFragment.newInstance(uid);
         FragmentManager fManager = getSupportFragmentManager();
@@ -81,6 +99,10 @@ public class ChatListActivity extends AppCompatActivity {
         ;
     }
 
+    /**
+     * detect who is online
+     * ask tcp server on new thread
+     */
     public static void checkWhoIsOnline() {
         new Thread(new Runnable() {
             @Override
@@ -96,16 +118,22 @@ public class ChatListActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Obtain chats from database or session
+     * @param fromDatabase
+     */
     public void loadChats(boolean fromDatabase) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    // ask api for messages
                     if (fromDatabase)
                         Session.get().getUser().setChats(JsonMapper.mapChats(
                                 new RestApi().findMessages(Session.get().getUser().getId()),
                                 Session.get().getUser()
                         ));
+                    // update the adapater
                     mPostAdapter.setPosts(Session.get().getUser().getChats());
                     mPostAdapter.notifyDataSetChanged();
                 } catch (IOException io) {
@@ -115,14 +143,26 @@ public class ChatListActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * custom list of chats
+     */
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
 
+        // full list to show
         private ArrayList<Chat> mPosts = new ArrayList<>();
+
+        // update list
         public void setPosts(List<Chat> posts) {
             mPosts.clear();
             for(Chat c:posts) mPosts.add(c);
         }
 
+        /**
+         * load layout
+         * @param parent
+         * @param viewType
+         * @return
+         */
         @NonNull
         @Override
         public PostListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -133,6 +173,11 @@ public class ChatListActivity extends AppCompatActivity {
             );
         }
 
+        /**
+         * set data
+         * @param viewHolder
+         * @param position
+         */
         @Override
         public void onBindViewHolder(PostListAdapter.ViewHolder viewHolder, final int position) {
             viewHolder.chat = ( (Chat) (mPosts.get(position)) );
@@ -140,26 +185,39 @@ public class ChatListActivity extends AppCompatActivity {
             viewHolder.bind();
         }
 
+        /**
+         * number of chats
+         * @return int
+         */
         @Override
         public int getItemCount() {
             return mPosts.size();
         }
 
+        /**
+         * custom view
+         */
         public class ViewHolder extends RecyclerView.ViewHolder {
 
+            // current chat
             public Chat chat;
             private TextView mRecipient;
             private TextView mLastMsg;
             private TextView mDate;
             private TextView mOnline;
 
+            /**
+             * constructor
+             * @param v
+             */
             public ViewHolder(View v) {
                 super(v);
-                Log.d("ChatListActivity", "executing ViewHolder constructor");
                 // on click item show product details
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        // if fragment doesn't exits
+                        // that mean's we need to call the activity
                         if (mMessageFrame == null )
                             startActivity(ChatActivity.newIntent(
                                     ChatListActivity.this, chat.getUser().getId()));
@@ -176,13 +234,15 @@ public class ChatListActivity extends AppCompatActivity {
 
             }
 
+            /**
+             * set data to the visual elements
+             */
             public void bind()
             {
-
+                // obtain last message content
                 Message lastMsg = chat.getMessages().get(chat.getMessages().size() - 1);
                 String timeAgo = DateUtils.getRelativeTimeSpanString(
                         lastMsg.getDate().getTime()).toString();
-
                 // bind data
                 mDate.setText(timeAgo);
                 mRecipient.setText(chat.getUser().getUsername());
@@ -196,15 +256,27 @@ public class ChatListActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * modify menu options layout
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_main, menu);
         menu.findItem(R.id.menu_msg).setVisible(false);
         return true;
     }
+
+    /**
+     * Event on click menu's item
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            // open profile
             case R.id.menu_user:
                 startActivity(new Intent(ChatListActivity.this, ProductListActivity.class));
                 return true;
@@ -213,23 +285,39 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
 
-
-
+    /**
+     * set current activity as active
+     * and also set the context
+     */
     @Override
     public void onStart() {
         super.onStart();
         active = true;
         context = this;
     }
+
+    /**
+     * unset the active and context variables
+     */
     @Override
     public void onStop() {
         super.onStop();
         active = false;
         context = null;
     }
+
+    /**
+     * getter static context
+     * @return ChatListActivity
+     */
     public static ChatListActivity getContext() {
         return context;
     }
+
+    /**
+     * getter static active boolean
+     * @return boolean
+     */
     public static boolean isActive() {
         return active;
     }

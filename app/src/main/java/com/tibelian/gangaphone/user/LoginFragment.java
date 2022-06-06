@@ -24,28 +24,46 @@ import com.tibelian.gangaphone.product.ListProductActivity;
 
 import java.io.IOException;
 
+/**
+ * Sign in form
+ */
 public class LoginFragment extends Fragment {
 
+    // the member variables
+    // these are the objects
+    // bind to the xml elements
     private Button mSignIn;
     private EditText mUsernameInput;
     private EditText mPasswordInput;
     private TextView mRegisterBtn;
     private TextView mGuestBtn;
 
+    /**
+     * This overridden method is used to generate
+     * all the visual elements from the xml layout
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // declare the main view object using the layout
         View view = inflater.inflate(R.layout.fragment_form_login, container,false);
 
-        //
+        // initialize all the elements
         initMemberVariables(view);
 
-        //
+        // add events on the buttons
         mSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                // when siginIn button is pressed
+                // then search on the user and the password
+                // on the database
                 User loggedIn = null;
                 try {
                     loggedIn = new RestApi().findUserByLogin(
@@ -54,23 +72,31 @@ public class LoginFragment extends Fragment {
                     Log.e("LoginFragment", "error -> " + e);
                 }
 
-                if (loggedIn != null && loggedIn.getId() != 0) {
+                // if login didn't failed create session
+                // and show the default products list
+                // else show error message
+                if (loggedIn != null && loggedIn.getId() != 0)
+                {
                     Session.get().setUser(loggedIn);
                     Session.get().setLoggedIn(true);
                     startActivity(new Intent(getContext(), ListProductActivity.class));
-
-                } else {
+                }
+                else {
                     Toast.makeText(getActivity(), "Invalid credentials", Toast.LENGTH_SHORT).show();
                 }
 
             }
         });
+
+        // register button opens the create account fragment form
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((MainActivity) getActivity()).replaceFragment(new RegisterFragment());
             }
         });
+
+        // guest button shows the default products list
         mGuestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,6 +107,10 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
+    /**
+     * assign xml elements to java objects
+     * @param view
+     */
     private void initMemberVariables(View view) {
         mSignIn = (Button) view.findViewById(R.id.user_login_confirm);
         mUsernameInput = (EditText) view.findViewById(R.id.user_login_username);

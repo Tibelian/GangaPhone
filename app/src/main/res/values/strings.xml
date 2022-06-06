@@ -82,4 +82,6 @@
     <string name="prev">&lt; PREV</string>
     <string name="next">NEXT &gt;</string>
     <string name="newMessageTitle">You\'ve received a new message</string>
+    <string name="error_register">Couldn\'t create the account</string>
+    <string name="error_registerDuplicated">Already exists and account with this email or username</string>
 </resources>

@@ -82,4 +82,6 @@
     <string name="prev">&lt; ANTERIORUL</string>
     <string name="next">URMĂTORUL &gt;</string>
     <string name="newMessageTitle">Ai primit un mesaj nou</string>
+    <string name="error_register">Nu s-a putut crea contul</string>
+    <string name="error_registerDuplicated">Deja există un cont cu acest email sau username</string>
 </resources>

@@ -15,8 +15,18 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * Parse json string to java object
+ * and vice versa
+ */
 public class JsonMapper {
 
+    /**
+     * Creates Message Object
+     * from JsonObject
+     * @param data
+     * @return Message
+     */
     public static Message mapMessage(JsonObject data) {
         Message m = new Message();
 
@@ -41,6 +51,15 @@ public class JsonMapper {
         return m;
     }
 
+    /**
+     * Creates Product Object
+     * from JsonObject
+     * if parseRelations is set as true
+     * then check for relations to map them also
+     * @param data
+     * @param parseRelations
+     * @return Product
+     */
     public static Product mapProduct(JsonObject data, boolean parseRelations) {
         Product p = new Product();
         p.setId(data.get("id").getAsInt());
@@ -76,6 +95,12 @@ public class JsonMapper {
         return p;
     }
 
+    /**
+     * Transform JsonObject to User
+     * @param data
+     * @param parseRelations
+     * @return User
+     */
     public static User mapUser(JsonObject data, boolean parseRelations) {
         User u = new User();
         u.setId(data.get("id").getAsInt());
@@ -116,6 +141,12 @@ public class JsonMapper {
         return u;
     }
 
+    /**
+     * Transform JsonObject to ProductPicture
+     * @param data
+     * @param parseRelations
+     * @return ProductPicture
+     */
     public static ProductPicture mapProductPicture(JsonObject data, boolean parseRelations) {
         ProductPicture pp = new ProductPicture();
         try { pp.setUrl(data.get("url").getAsString()); }
@@ -130,6 +161,14 @@ public class JsonMapper {
         return pp;
     }
 
+    /**
+     * Transform Messages to Chat,
+     * currentUser is required to
+     * check prevent duplicated chats
+     * @param messages
+     * @param currentUser
+     * @return ArrayList<Chat>
+     */
     public static ArrayList<Chat> mapChats(ArrayList<Message> messages, User currentUser) {
         ArrayList<Chat> chats = new ArrayList<>();
         for(Message msg:messages)

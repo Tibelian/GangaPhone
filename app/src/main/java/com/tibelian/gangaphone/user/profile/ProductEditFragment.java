@@ -44,13 +44,20 @@ import com.tibelian.gangaphone.product.ProductPagerActivity;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * The product edition form
+ */
 public class ProductEditFragment extends Fragment {
 
+    // control variables
     private static final int REQUEST_PHOTO = 1;
     private static final String ARG_PRODUCT_ID = "product_id";
     private boolean isNew = true;
+
+    // the current product
     private Product mProduct;
 
+    // member variables
     private EditText mNameInput;
     private EditText mPriceInput;
     private EditText mDescInput;
@@ -65,8 +72,10 @@ public class ProductEditFragment extends Fragment {
     private TextView mTotalViewsCounter;
     private CheckBox mSold;
 
+    // control variable of pictures to delete on the activity
     public ArrayList<Integer> picturesToDelete = new ArrayList<>();
 
+    // callback on request permission
     private ActivityResultLauncher<String> requestPermissionLauncher =
         registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (isGranted) {
@@ -77,6 +86,11 @@ public class ProductEditFragment extends Fragment {
             }
     });
 
+    /**
+     * generate a ProductEditFragment
+     * @param productId
+     * @return
+     */
     public static ProductEditFragment newInstance(int productId) {
         Bundle args = new Bundle();
         args.putInt(ARG_PRODUCT_ID, productId);
@@ -85,16 +99,26 @@ public class ProductEditFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * this loads the current product
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // obtain productId from args
         int productId = getArguments().getInt(ARG_PRODUCT_ID, 0);
+
+        // check if its editing or creating a product
         isNew = (productId == 0);
         if (isNew) {
+            // create new product object
             mProduct = new Product();
             mProduct.setOwner(Session.get().getUser());
         }
         else {
+            // load product from user's session
             ArrayList<Product> sesProd = Session.get().getUser().getProducts();
             for(Product p:sesProd) {
                 if (p.getId() == productId) {
@@ -102,6 +126,8 @@ public class ProductEditFragment extends Fragment {
                     break;
                 }
             }
+            // if product doesn't exist then show an error message
+            // and exist from the current activity
             if (mProduct == null) {
                 Toast.makeText(getActivity(), "PRODUCT NOT FOUND ON USER'S SESSION", Toast.LENGTH_LONG).show();
                 getActivity().finish();
@@ -109,26 +135,38 @@ public class ProductEditFragment extends Fragment {
         }
     }
 
+    /**
+     * Generate the main view from the layout
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        // obtain view from layout
         View view = inflater.inflate(R.layout.fragment_product_edit, container, false);
 
         // load elements
         initComponents(view);
 
+        // set event on click upload button
         mUploadImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // select picture from internal media
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 startActivityForResult(intent, REQUEST_PHOTO);
             }
         });
 
+        // on click remove button
         mRemoveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // if is editing picture then delete it from the database
                 if (!isNew) {
                     try {
                         boolean deleted = new RestApi().deleteProduct(mProduct.getId());
@@ -140,13 +178,16 @@ public class ProductEditFragment extends Fragment {
                         Log.e("ProductEditFragment", "mRemoveBtn.onClick error --> " + e);
                     }
                 }
+                // close activity
                 getActivity().finish();
             }
         });
 
+        // when save button is clicked
         mSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // execute the save method
                 saveCurrentProduct();
             }
         });
@@ -154,6 +195,10 @@ public class ProductEditFragment extends Fragment {
         return view;
     }
 
+    /**
+     * initialize elements from the main view
+     * @param v
+     */
     private void initComponents(View v) {
 
         // bind xml elements
@@ -222,7 +267,7 @@ public class ProductEditFragment extends Fragment {
             }
         });
 
-        // load fragment
+        // load images fragment
         FragmentManager fragmentManager = getParentFragmentManager();
         mImagesFragment = (ImagesFragment) fragmentManager.findFragmentById(R.id.edit_pImagesList);
         if(mImagesFragment == null) {
@@ -232,7 +277,6 @@ public class ProductEditFragment extends Fragment {
                     .runOnCommit(new Runnable() {
                         @Override
                         public void run() {
-                            Log.e("ImagesFragment", "runOnCommit loading " + mProduct.getPictures().size() + " pictures");
                             mImagesFragment.loadImages(mProduct.getPictures());
                         }
                     })
@@ -257,22 +301,36 @@ public class ProductEditFragment extends Fragment {
 
     }
 
+    /**
+     * this method obtains an intent result
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // check if the pictures has loaded correctly
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_PHOTO) {
-
+            // obtain the uri
             Uri imageUri = data.getData();
 
+            // bind the picture to the current product
             ProductPicture pp = new ProductPicture();
             pp.setUri(imageUri);
             pp.setRealpath(getRealPathFromUri(imageUri));
-
             mProduct.getPictures().add(pp);
+
+            // update the pictures adapter
             mImagesFragment.loadImages(mProduct.getPictures());
         }
     }
 
 
+    /**
+     * Obtain the real path from an Uri object
+     * @param contentUri
+     * @return String
+     */
     private String getRealPathFromUri(Uri contentUri) {
         Cursor cursor = null;
         try {
@@ -287,19 +345,28 @@ public class ProductEditFragment extends Fragment {
     }
 
 
+    /**
+     * Update the current product's changes
+     */
     private void saveCurrentProduct() {
+        // first check the permissions
         if (ContextCompat.checkSelfPermission(
                 getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
             // ALL GOOD - we have permission
             try {
 
+                // validate product's data
                 if (!checkValidProduct()) return;
 
+                // if is new product then insert it into the database
+                // and update the session
                 if (isNew) {
                     mProduct = new RestApi().createProduct(mProduct);
                     Session.get().getUser().getProducts().add(mProduct);
                 }
+
+                // if editing product then do this:
                 else {
                     // delete pictures from temp object
                     int i = 0;
@@ -309,21 +376,31 @@ public class ProductEditFragment extends Fragment {
                         else i++;
                     }
                     picturesToDelete.clear();
+                    // and finally update database
                     mProduct = new RestApi().updateProduct(mProduct);
                 }
             } catch (IOException io) {
                 Log.e("ProductEditFragment", "mSaveBtn onclick --> " + io);
             }
+
+            // the last step is to check if changes
+            // has been made correctly
             if (mProduct.getId() != 0)
                 startActivity(ProductPagerActivity.newIntent(getActivity(), mProduct.getId(), true));
             else
                 Toast.makeText(getActivity(), R.string.error_newProduct, Toast.LENGTH_LONG).show();
+
         } else {
+            // if not then ask for them
             requestPermissionLauncher.launch(
                     Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
     }
 
+    /**
+     * Validate the current product's data
+     * @return boolean
+     */
     private boolean checkValidProduct() {
         boolean ok = true;
         int lastError = -1;

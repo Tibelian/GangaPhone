@@ -1,14 +1,17 @@
 package com.tibelian.gangaphone.database.model;
 
-import android.app.Activity;
 import android.util.Log;
 
 import com.tibelian.gangaphone.messenger.socket.MessengerManager;
 
 import java.util.ArrayList;
 
+/**
+ * User Model
+ */
 public class User {
 
+    // info and data about one user
     private int id;
     private String username;
     private String password;
@@ -18,8 +21,16 @@ public class User {
     private ArrayList<Product> products = new ArrayList<>();
     private ArrayList<Chat> chats = new ArrayList<>();
 
+    // control variables to
+    // detect if this user is connected
+    // to the TCP server
     private boolean isOnline;
     private long lastConnUpdate;
+
+
+    /////////////////////////
+    // GETTERS AND SETTERS //
+    /////////////////////////
 
     public int getId() {
         return id;
@@ -82,6 +93,12 @@ public class User {
         return chats;
     }
 
+
+    /**
+     * Getter - Specific chat
+     * @param uid
+     * @return
+     */
     public Chat getChatFrom(int uid) {
         for (Chat chat:chats)
             if (chat.getUser().getId() == uid)
@@ -97,6 +114,10 @@ public class User {
         return isOnline;
     }
 
+    /**
+     * Set online the user just for 60 seconds
+     * @param online
+     */
     public void setOnline(boolean online) {
         isOnline = online;
         lastConnUpdate = System.currentTimeMillis();

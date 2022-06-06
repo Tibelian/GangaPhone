@@ -26,15 +26,25 @@ import com.tibelian.gangaphone.messenger.socket.SocketClient;
 
 import java.util.List;
 
+/**
+ * The user's products list
+ */
 public class ProductListActivity extends AppCompatActivity {
 
+    // member variables elements from the layout
     private RecyclerView mPostsRecyclerView;
     private PostListAdapter mPostAdapter;
     private Button mAddProductBtn;
 
+    /**
+     * This method is the first to run
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // load layout
         setContentView(R.layout.activity_profile_products);
 
         // init recycler
@@ -65,11 +75,18 @@ public class ProductListActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * The custom adapter
+     */
     private class PostListAdapter extends RecyclerView.Adapter<PostListAdapter.ViewHolder> {
 
+        // list of products
         private List<Product> mPosts;
+
+        // the activity
         private Context context;
+
+        // setters
         public void setPosts(List<Product> posts) {
             mPosts = posts;
         }
@@ -77,6 +94,12 @@ public class ProductListActivity extends AppCompatActivity {
             this.context = context;
         }
 
+        /**
+         * each product's generated layout
+         * @param parent
+         * @param viewType
+         * @return
+         */
         @NonNull
         @Override
         public PostListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -86,27 +109,45 @@ public class ProductListActivity extends AppCompatActivity {
             );
         }
 
+        /**
+         * insert data to the view
+         * @param viewHolder
+         * @param position
+         */
         @Override
         public void onBindViewHolder(PostListAdapter.ViewHolder viewHolder, final int position) {
             viewHolder.product = ( (Product) (mPosts.get(position)) );
             viewHolder.bind();
         }
 
+        /**
+         * count the products
+         * @return int
+         */
         @Override
         public int getItemCount() {
             return mPosts.size();
         }
 
+        /**
+         * The products view
+         */
         public class ViewHolder extends RecyclerView.ViewHolder {
 
+            // current product
             public Product product;
+
+            // member variables, xml elements
             private TextView mProductTitle;
             private TextView mProductPrice;
             private TextView mProductViews;
 
+            /**
+             * constructor
+             * @param v
+             */
             public ViewHolder(View v) {
                 super(v);
-
                 // on click item show product details
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -115,7 +156,6 @@ public class ProductListActivity extends AppCompatActivity {
                                 ProductEditActivity.newIntent(ProductListActivity.this, product.getId()));
                     }
                 });
-
                 // bind xml textview
                 mProductTitle = v.findViewById(R.id.productTitle);
                 mProductPrice = v.findViewById(R.id.productPrice);
@@ -123,11 +163,13 @@ public class ProductListActivity extends AppCompatActivity {
 
             }
 
+            /**
+             * set visual data
+             */
             public void bind()
             {
                 mProductTitle.setText(product.getName());
                 mProductPrice.setText(product.getPrice() + " €");
-
                 String numViews = context.getResources().getString(R.string.num_views);
                 mProductViews.setText(numViews + ": " + product.getVisits());
             }
@@ -136,6 +178,11 @@ public class ProductListActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Inflate the custom menu
+     * @param menu
+     * @return boolean
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_main, menu);
@@ -143,20 +190,28 @@ public class ProductListActivity extends AppCompatActivity {
         menu.findItem(R.id.menu_user).setIcon(R.drawable.logout);
         return true;
     }
+
+    /**
+     * Events on click each menu option
+     * @param item
+     * @return boolean
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+
+            // show messenger
             case R.id.menu_msg:
                 startActivity(new Intent(ProductListActivity.this, ChatListActivity.class));
                 return true;
+
+            // logout button
             case R.id.menu_user:
                 Session.get().setUser(null);
                 Session.get().setLoggedIn(false);
-
                 // important
                 SocketClient.get().close();
                 SocketClient.get().setAsNull();
-
                 startActivity(new Intent(ProductListActivity.this, MainActivity.class));
                 return true;
         }

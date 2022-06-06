@@ -82,4 +82,6 @@
     <string name="prev">&lt; ANTERIOR</string>
     <string name="next">SIGUIENTE &gt;</string>
     <string name="newMessageTitle">Has recibido un nuevo mensaje</string>
+    <string name="error_register">No se ha podido crear la cuenta</string>
+    <string name="error_registerDuplicated">Ya exite una cuenta con este email o usuario</string>
 </resources>

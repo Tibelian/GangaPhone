@@ -16,30 +16,52 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
+/**
+ * CURL connection to download image
+ */
 public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
+    // url to access
     private String url;
+
+    // image to show
     private ImageView imageView;
 
+    /**
+     * Constructor
+     * @param url
+     * @param imageView
+     */
     public ImageLoadTask(String url, ImageView imageView) {
         this.url = url;
         this.imageView = imageView;
     }
 
+    /**
+     * Connect and obtain image as bitmap
+     * @param params
+     * @return Bitmap
+     */
     @Override
     protected Bitmap doInBackground(Void... params) {
         try {
+            // target url
             URL urlConnection = new URL(url);
+            // stat conn
             HttpsURLConnection connection = (HttpsURLConnection) urlConnection
                     .openConnection();
+            // receive data
             connection.setDoInput(true);
+            // do not check the ssl
             connection.setHostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String s, SSLSession sslSession) {
                     return true;
                 }
             });
+            // execute
             connection.connect();
+            // interpret input data as bitmap
             InputStream input = connection.getInputStream();
             Bitmap myBitmap = BitmapFactory.decodeStream(input);
             return myBitmap;
@@ -49,6 +71,10 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
         return null;
     }
 
+    /**
+     * when this task is finished update the view
+     * @param result
+     */
     @Override
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);

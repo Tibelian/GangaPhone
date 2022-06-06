@@ -11,35 +11,46 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
+/**
+ * Creates the connection with the TCP Server
+ */
 public class SocketClient {
 
+    // connection ip and port
     public static final String HOST = "51.91.58.72";
     public static final int PORT = 6000;
 
+    // the unique socket
     private static SocketClient socketClient;
 
+    // current connection data
     private String host;
     private int port;
     private Socket client;
     private InputStream input;
     private OutputStream output;
+    // control variable
     private boolean quit = false;
 
+    // singleton getter
     public static SocketClient get() {
         if (socketClient == null)
             socketClient = new SocketClient(HOST, PORT);
         return socketClient;
     }
 
+    // kill the connection
     public void setAsNull() {
         socketClient = null;
     }
 
+    // constructor as private
     private SocketClient(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
+    // init conn
     public void open() {
         try {
             client = new Socket(host, port);
@@ -50,6 +61,7 @@ public class SocketClient {
         }
     }
 
+    // wait for input data
     public String receive() {
         try {
             // client waits for message
@@ -68,6 +80,7 @@ public class SocketClient {
         return null;
     }
 
+    // output data, send a message to the server
     public void send(String msg) {
         try {
             output = client.getOutputStream();
@@ -82,6 +95,7 @@ public class SocketClient {
         }
     }
 
+    // close all connections
     public void close() {
         try {
             input.close();
@@ -93,6 +107,7 @@ public class SocketClient {
         }
     }
 
+    // check if connection is valid
     public boolean isConnected() {
         return (client != null && quit == false);
     }

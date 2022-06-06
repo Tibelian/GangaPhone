@@ -18,17 +18,25 @@ import androidx.fragment.app.DialogFragment;
 import com.tibelian.gangaphone.R;
 import com.tibelian.gangaphone.database.CurrentFilter;
 
+/**
+ * Apply new filter fragment
+ */
 public class FilterFragment extends DialogFragment {
 
+    // member variables - xml elements
+    // all filter options
     private CheckBox
             mStatusNewCheck,mStatusScratchedCheck, mStatusBrokenCheck;
-
     private EditText
             mKeywordInput, mLocationInput, mPriceMinInput, mPriceMaxInput;
-
     private RadioButton
             mOrderPriceAsc, mOrderPriceDesc, mOrderDateDesc, mOrderDateAsc, mOrderFeatured;
 
+    /**
+     * Generate view from layout
+     * @param savedInstanceState
+     * @return
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -58,6 +66,10 @@ public class FilterFragment extends DialogFragment {
         return dialog;
     }
 
+    /**
+     * initialize xml elements
+     * @param view
+     */
     private void initMemberVariables(View view) {
         mStatusNewCheck = view.findViewById(R.id.filterStatusNew);
         mStatusScratchedCheck = view.findViewById(R.id.filterStatusScratched);
@@ -73,8 +85,12 @@ public class FilterFragment extends DialogFragment {
         mOrderFeatured = view.findViewById(R.id.filterOrderFeatured);
     }
 
+    /**
+     * prepare on click events
+     * @param builder
+     */
     private void initButtonEvents(AlertDialog.Builder builder) {
-
+        // apply filter event
         builder.setPositiveButton(R.string.apply_filter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -84,6 +100,7 @@ public class FilterFragment extends DialogFragment {
                 getParentFragmentManager().setFragmentResult(ListProductActivity.DIALOG_FILTER, result);
             }
         });
+        // cancel filter
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -93,6 +110,9 @@ public class FilterFragment extends DialogFragment {
 
     }
 
+    /**
+     * reset current filter
+     */
     private void loadCurrentFilter() {
         mKeywordInput.setText(CurrentFilter.keyword);
         mStatusNewCheck.setChecked(CurrentFilter.status.contains("new"));
@@ -108,6 +128,9 @@ public class FilterFragment extends DialogFragment {
         mOrderFeatured.setChecked(CurrentFilter.orderBy.equals("featured"));
     }
 
+    /**
+     * update CurrentFilter static object
+     */
     private void applyFilter() {
 
         // apply no filter

@@ -28,11 +28,18 @@ import com.tibelian.gangaphone.messenger.ChatListActivity;
 
 import java.io.IOException;
 
+/**
+ * Generate the details fragment
+ */
 public class ProductDetailsFragment extends Fragment {
 
+    // const to manage intents data
     private static final String ARG_PRODUCT_ID = "product_id";
+
+    // current product
     private Product mProduct;
 
+    // member variables - xml elements
     private ImageView mPicture;
     private TextView mTitle;
     private TextView mDate;
@@ -45,10 +52,12 @@ public class ProductDetailsFragment extends Fragment {
     private Button mContactSeller;
     private Button mShare;
 
+    // manage images slide
     private int currentImg = 0;
     private TextView mPrevImg;
     private TextView mNextImg;
 
+    // instantiate the details page
     public static ProductDetailsFragment newInstance(int productId) {
         Bundle args = new Bundle();
         args.putInt(ARG_PRODUCT_ID, productId);
@@ -57,23 +66,52 @@ public class ProductDetailsFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * On init
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // check id to search on database
         int productId = getArguments().getInt(ARG_PRODUCT_ID, 0);
-        try {
-            mProduct = new RestApi().findProduct(productId);
-        } catch (IOException e) {
-            Log.e("ProductDetailsFragment", "findProduct --> " + e);
-        }
+
+        // new thread to obtain product from database
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try { mProduct = new RestApi().findProduct(productId); }
+                catch (IOException e) {}
+
+                // set data after rest api finishes
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        bindData();
+                    }
+                });
+
+            }
+        }).start();
+
     }
 
+    /**
+     * create main view from layout
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        // main view
         View view = inflater.inflate(R.layout.fragment_product_details, container, false);
 
+        // init xml elements
         mPicture = view.findViewById(R.id.productDetails_Picture);
         mTitle = view.findViewById(R.id.productDetails_Title);
         mDate = view.findViewById(R.id.productDetails_Date);
@@ -88,8 +126,20 @@ public class ProductDetailsFragment extends Fragment {
         mEmail = view.findViewById(R.id.productDetails_Email);
         mShare = view.findViewById(R.id.productDetails_Share);
 
+        return view;
+    }
+
+    /**
+     * now we will attach data to the visual elements
+     * each time we call this method
+     */
+    private void bindData()
+    {
+        // load pictures
         if (mProduct.getPictures().size() > 0)
             updateCurrentPicture();
+
+        // bind data
         mTitle.setText(mProduct.getName());
         mDate.setText(mProduct.getDate().toString());
         mLocation.setText(mProduct.getOwner().getLocation());
@@ -98,6 +148,7 @@ public class ProductDetailsFragment extends Fragment {
         mPhone.setText(mProduct.getOwner().getPhone());
         mEmail.setText(mProduct.getOwner().getEmail());
 
+        // translate status
         String status = "unknown";
         switch(mProduct.getStatus()) {
             case "broken":     status = getString(R.string.status_broken);     break;
@@ -106,6 +157,7 @@ public class ProductDetailsFragment extends Fragment {
         }
         mStatus.setText(status);
 
+        // load previous image if exits
         mPrevImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -115,6 +167,7 @@ public class ProductDetailsFragment extends Fragment {
             }
         });
 
+        // load next image if exits
         mNextImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,6 +177,7 @@ public class ProductDetailsFragment extends Fragment {
             }
         });
 
+        // open messenger on click the button
         mContactSeller.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,6 +190,7 @@ public class ProductDetailsFragment extends Fragment {
             }
         });
 
+        // call phone
         mPhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,6 +200,7 @@ public class ProductDetailsFragment extends Fragment {
             }
         });
 
+        // send email
         mEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,6 +211,7 @@ public class ProductDetailsFragment extends Fragment {
             }
         });
 
+        // send text
         mShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -169,17 +226,23 @@ public class ProductDetailsFragment extends Fragment {
         // the logged in user cant contact himself
         if (mProduct.getOwner().getId() == Session.get().getUser().getId())
             mContactSeller.setVisibility(View.INVISIBLE);
-
-        return view;
     }
 
+
+    /**
+     * Create text from product's data
+     * @return String
+     */
     private String getReport() {
+
+        // translate status
         String status = "unknown";
         switch(mProduct.getStatus()) {
             case "broken":     status = getString(R.string.status_broken);     break;
             case "new":        status = getString(R.string.status_new);        break;
             case "scratched":  status = getString(R.string.status_scratched);  break;
         }
+        // generate report
         String content = "";
         content += getString(R.string.report_intro) + "\n";
         content += getString(R.string.productName) + ": " + mProduct.getName() + "\n";
@@ -194,6 +257,9 @@ public class ProductDetailsFragment extends Fragment {
         return content;
     }
 
+    /**
+     * show the selected picture
+     */
     private void updateCurrentPicture() {
         mPicture.setImageResource(R.drawable.loading_image);
         if (mProduct.getPictures().get(currentImg) != null)
@@ -201,6 +267,9 @@ public class ProductDetailsFragment extends Fragment {
         checkNavPictures();
     }
 
+    /**
+     * visual effects to the next and prev buttons
+     */
     private void checkNavPictures() {
         if (currentImg == 0)
             mPrevImg.setTextColor(Color.GRAY);

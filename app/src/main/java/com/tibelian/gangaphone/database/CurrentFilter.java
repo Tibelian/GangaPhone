@@ -5,8 +5,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * Manage the product's list filter
+ */
 public class CurrentFilter {
 
+    // all possible variations
     public static ArrayList<String> status = new ArrayList<>();
     public static String keyword = "";
     public static String location = "";
@@ -14,6 +18,9 @@ public class CurrentFilter {
     public static double maxPrice = -1;
     public static String orderBy = "";
 
+    /**
+     * reset the filter to default
+     */
     public static void clear() {
         CurrentFilter.status = new ArrayList<>();
         CurrentFilter.keyword = "";
@@ -23,6 +30,10 @@ public class CurrentFilter {
         CurrentFilter.orderBy = "";
     }
 
+    /**
+     * Parse this object to json
+     * @return String
+     */
     public static String toJson() {
         JSONObject filter = new JSONObject();
         try {
